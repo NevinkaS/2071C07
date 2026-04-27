@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -40,8 +40,11 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+ADC_HandleTypeDef hadc1;
+
 SPI_HandleTypeDef hspi1;
 
+TIM_HandleTypeDef htim7;
 TIM_HandleTypeDef htim16;
 
 UART_HandleTypeDef huart2;
@@ -52,6 +55,10 @@ uint16_t first_sample = 1;
 uint16_t current_sample = 0;
 uint16_t filtered_sample = 0;
 uint16_t avg;
+uint8_t rx_byte[2];
+bool manual = false;
+bool distance = false;
+int
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -60,6 +67,8 @@ static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_TIM16_Init(void);
+static void MX_ADC1_Init(void);
+static void MX_TIM7_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -82,6 +91,20 @@ uint16_t moving_average_filter(uint16_t current_sample)
     previous_sample = current_sample;
 
     return avg;
+}
+
+int ultraRead(){
+	  __HAL_TIM_SET_COUNTER(&htim16, 0);
+	  HAL_GPIO_WritePin(trig_GPIO_Port, trig_Pin, 1);
+	  while(__HAL_TIM_GET_COUNTER(&htim16) <= 10){;}
+	  HAL_GPIO_WritePin(trig_GPIO_Port, trig_Pin, 0);
+
+	  while(HAL_GPIO_ReadPin(echo_GPIO_Port,echo_Pin)==0){;}
+	  __HAL_TIM_SET_COUNTER(&htim16, 0);
+	  while(HAL_GPIO_ReadPin(echo_GPIO_Port,echo_Pin)==1){;}
+	  int time = __HAL_TIM_GET_COUNTER(&htim16);
+
+	  int cm = time * 0.01715;
 }
 
 /* USER CODE END 0 */
@@ -118,6 +141,8 @@ int main(void)
   MX_USART2_UART_Init();
   MX_SPI1_Init();
   MX_TIM16_Init();
+  MX_ADC1_Init();
+  MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -125,13 +150,31 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   uint16_t sample_value;
+  HAL_TIM_Base_Start(&htim7);
+  HAL_UART_Receive_IT(&huart2, rx_byte, 2);
   while (1)
   {
-    /* USER CODE END WHILE */
-	  HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
-	  filtered_sample = moving_average_filter(sample_value);
-	  HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
 
+	  if(ultraRead()<10){
+	  		  HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 1);
+	  		  HAL_Delay(50);
+	  	  } else {
+	  		  HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 0);
+	  		  HAL_Delay(50);
+	  	  }
+
+	  if(manual){
+		  HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
+		  filtered_sample = moving_average_filter(sample_value);
+		  HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
+	  }
+	  else if (distance) {
+		  uint8_t high = rx_byte[1]*1.2;
+		  uint8_t low = rx_byte[1]*0.8;
+		  while(1){
+			  continue
+	  }
+    /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }
@@ -199,6 +242,64 @@ void SystemClock_Config(void)
 }
 
 /**
+  * @brief ADC1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_ADC1_Init(void)
+{
+
+  /* USER CODE BEGIN ADC1_Init 0 */
+
+  /* USER CODE END ADC1_Init 0 */
+
+  ADC_ChannelConfTypeDef sConfig = {0};
+
+  /* USER CODE BEGIN ADC1_Init 1 */
+
+  /* USER CODE END ADC1_Init 1 */
+
+  /** Common config
+  */
+  hadc1.Instance = ADC1;
+  hadc1.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
+  hadc1.Init.Resolution = ADC_RESOLUTION_8B;
+  hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  hadc1.Init.LowPowerAutoWait = DISABLE;
+  hadc1.Init.ContinuousConvMode = DISABLE;
+  hadc1.Init.NbrOfConversion = 1;
+  hadc1.Init.DiscontinuousConvMode = DISABLE;
+  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc1.Init.DMAContinuousRequests = DISABLE;
+  hadc1.Init.Overrun = ADC_OVR_DATA_PRESERVED;
+  hadc1.Init.OversamplingMode = DISABLE;
+  if (HAL_ADC_Init(&hadc1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_6;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
+  sConfig.SingleDiff = ADC_SINGLE_ENDED;
+  sConfig.OffsetNumber = ADC_OFFSET_NONE;
+  sConfig.Offset = 0;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN ADC1_Init 2 */
+
+  /* USER CODE END ADC1_Init 2 */
+
+}
+
+/**
   * @brief SPI1 Initialization Function
   * @param None
   * @retval None
@@ -234,6 +335,44 @@ static void MX_SPI1_Init(void)
   /* USER CODE BEGIN SPI1_Init 2 */
 
   /* USER CODE END SPI1_Init 2 */
+
+}
+
+/**
+  * @brief TIM7 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM7_Init(void)
+{
+
+  /* USER CODE BEGIN TIM7_Init 0 */
+
+  /* USER CODE END TIM7_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM7_Init 1 */
+
+  /* USER CODE END TIM7_Init 1 */
+  htim7.Instance = TIM7;
+  htim7.Init.Prescaler = 31;
+  htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim7.Init.Period = 65535;
+  htim7.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim7) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim7, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM7_Init 2 */
+
+  /* USER CODE END TIM7_Init 2 */
 
 }
 
@@ -322,7 +461,23 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(trig_GPIO_Port, trig_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : trig_Pin */
+  GPIO_InitStruct.Pin = trig_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(trig_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : echo_Pin */
+  GPIO_InitStruct.Pin = echo_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(echo_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : LD3_Pin */
   GPIO_InitStruct.Pin = LD3_Pin;
@@ -337,6 +492,25 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
+	if (huart->Instance == USART2){
+		if(rx_byte[0]=='M'){
+			manual = true;
+			distance = false;
+			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 1);
+		} else if (rx_byte[0]=='D'){
+			manual = false;
+			distance = true;
+			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 1);
+		} else if (rx_byte[0]=='O'){
+			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 0);
+			manual = false;
+			distance = false;
+		}
+	}
+
+	HAL_UART_Receive_IT(&huart2, rx_byte, 2);
+}
 
 /* USER CODE END 4 */
 

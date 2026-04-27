@@ -1,0 +1,115 @@
+18:59:26 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c:65:1: error: two or more data types in declaration specifiers
+   65 | void SystemClock_Config(void);
+      | ^~~~
+../Core/Src/main.c: In function 'ultraRead':
+../Core/Src/main.c:107:15: warning: unused variable 'cm' [-Wunused-variable]
+  107 |           int cm = time * 0.01715;
+      |               ^~
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:167:42: warning: passing argument 2 of 'HAL_SPI_Receive' from incompatible pointer type [-Wincompatible-pointer-types]
+  167 |                   HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
+      |                                          ^~~~~~~~~~~~~
+      |                                          |
+      |                                          uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:430,
+                 from ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.c:20:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:797:69: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+  797 | HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                            ~~~~~~~~~^~~~~
+../Core/Src/main.c:169:45: warning: passing argument 2 of 'HAL_UART_Transmit' from incompatible pointer type [-Wincompatible-pointer-types]
+  169 |                   HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
+      |                                             ^~~~~~~~~~~~~~~~
+      |                                             |
+      |                                             uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:450:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:1694:79: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+ 1694 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                                ~~~~~~~~~~~~~~~^~~~~
+../Core/Src/main.c:173:27: warning: unused variable 'low' [-Wunused-variable]
+  173 |                   uint8_t low = rx_byte[1]*0.8;
+      |                           ^~~
+../Core/Src/main.c:172:27: warning: unused variable 'high' [-Wunused-variable]
+  172 |                   uint8_t high = rx_byte[1]*1.2;
+      |                           ^~~~
+../Core/Src/main.c:249:13: error: invalid storage class for function 'MX_ADC1_Init'
+  249 | static void MX_ADC1_Init(void)
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:307:13: error: invalid storage class for function 'MX_SPI1_Init'
+  307 | static void MX_SPI1_Init(void)
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:346:13: error: invalid storage class for function 'MX_TIM7_Init'
+  346 | static void MX_TIM7_Init(void)
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:384:13: error: invalid storage class for function 'MX_TIM16_Init'
+  384 | static void MX_TIM16_Init(void)
+      |             ^~~~~~~~~~~~~
+../Core/Src/main.c:416:13: error: invalid storage class for function 'MX_USART2_UART_Init'
+  416 | static void MX_USART2_UART_Init(void)
+      |             ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:451:13: error: invalid storage class for function 'MX_GPIO_Init'
+  451 | static void MX_GPIO_Init(void)
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:530:1: error: expected declaration or statement at end of input
+  530 | }
+      | ^
+../Core/Src/main.c: At top level:
+../Core/Src/main.c:66:13: warning: 'MX_GPIO_Init' used but never defined
+   66 | static void MX_GPIO_Init(void);
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:67:13: warning: 'MX_USART2_UART_Init' used but never defined
+   67 | static void MX_USART2_UART_Init(void);
+      |             ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:68:13: warning: 'MX_SPI1_Init' used but never defined
+   68 | static void MX_SPI1_Init(void);
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:69:13: warning: 'MX_TIM16_Init' used but never defined
+   69 | static void MX_TIM16_Init(void);
+      |             ^~~~~~~~~~~~~
+../Core/Src/main.c:70:13: warning: 'MX_ADC1_Init' used but never defined
+   70 | static void MX_ADC1_Init(void);
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:71:13: warning: 'MX_TIM7_Init' used but never defined
+   71 | static void MX_TIM7_Init(void);
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c: In function 'ultraRead':
+../Core/Src/main.c:108:1: warning: control reaches end of non-void function [-Wreturn-type]
+  108 | }
+      | ^
+../Core/Src/main.c: At top level:
+../Core/Src/main.c:521:6: warning: 'Error_Handler' defined but not used [-Wunused-function]
+  521 | void Error_Handler(void)
+      |      ^~~~~~~~~~~~~
+../Core/Src/main.c:495:6: warning: 'HAL_UART_RxCpltCallback' defined but not used [-Wunused-function]
+  495 | void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
+      |      ^~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:451:13: warning: 'MX_GPIO_Init' defined but not used [-Wunused-function]
+  451 | static void MX_GPIO_Init(void)
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:416:13: warning: 'MX_USART2_UART_Init' defined but not used [-Wunused-function]
+  416 | static void MX_USART2_UART_Init(void)
+      |             ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:384:13: warning: 'MX_TIM16_Init' defined but not used [-Wunused-function]
+  384 | static void MX_TIM16_Init(void)
+      |             ^~~~~~~~~~~~~
+../Core/Src/main.c:346:13: warning: 'MX_TIM7_Init' defined but not used [-Wunused-function]
+  346 | static void MX_TIM7_Init(void)
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:307:13: warning: 'MX_SPI1_Init' defined but not used [-Wunused-function]
+  307 | static void MX_SPI1_Init(void)
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:249:13: warning: 'MX_ADC1_Init' defined but not used [-Wunused-function]
+  249 | static void MX_ADC1_Init(void)
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:188:6: warning: 'SystemClock_Config' defined but not used [-Wunused-function]
+  188 | void SystemClock_Config(void)
+      |      ^~~~~~~~~~~~~~~~~~
+make: *** [Core/Src/subdir.mk:34: Core/Src/main.o] Error 1
+"make -j8 all" terminated with exit code 2. Build might be incomplete.
+
+18:59:26 Build Failed. 9 errors, 21 warnings. (took 801ms)
+
