@@ -202,14 +202,7 @@ int main(void)
 		  uint8_t high = rx_byte[1]*1.2;
 		  uint8_t low = rx_byte[1]*0.8;
 		  while(1){
-			  if(ultraRead()<low){
-			  		  HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 1);
-			  		  HAL_Delay(5);
-			  	  }
-			  if(ultraRead()>high) {
-			  		  HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 0);
-			  		  HAL_Delay(5);
-			  	  }
+			  break;
 		  }
 	  }
     /* USER CODE END WHILE */
