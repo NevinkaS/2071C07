@@ -196,7 +196,7 @@ int main(void)
 	  		  uint8_t low  = rx_byte[1] * 0.8;
 
 	  		  // 1. Check distance ONLY every 60 milliseconds
-	  		  if (HAL_GetTick() - last_ping_time > 250) {
+	  		  if (HAL_GetTick() - last_ping_time > 60) {
 	  			  last_ping_time = HAL_GetTick(); // Reset the clock
 
 	  			  int current_dist = ultraRead();

@@ -18,6 +18,7 @@ devices = serial.tools.list_ports.comports()
 SERIAL_PORT = "COM11"
 BAUD_RATE = 115200
 SAMPLE_RATE = 8333
+raw_data = []
 
 # Recording functions
 # =========================
@@ -45,57 +46,116 @@ def record_manual(duration_seconds):
     print(f"Received {len(samples)} samples.")
     ser.close()
 
-    return np.array(samples, dtype=np.uint8)
+    outmodes(np.array(samples, dtype=np.uint8))
 
 
-def record_distance_trigger():
+def record_distance_trigger(distance):
     """
     This assumes the Processing STM only sends data to the PC when
     the ultrasonic sensor has triggered recording.
     """
-    print(f"\nOpening {SERIAL_PORT} at {BAUD_RATE} baud...")
-    ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
+    while(True):
+        print(f"\nOpening {SERIAL_PORT} at {BAUD_RATE} baud...")
+        ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
+        ser.write('D'.encode())
+        ser.write(distance.to_bytes(1, byteorder='little'))
 
-    samples = []
+        samples = []
 
-    print("Distance Trigger Mode started.")
-    print("Waiting for STM to send triggered audio...")
-    print("Press Ctrl+C to stop.\n")
+        print("Distance Trigger Mode started.")
+        print("Waiting for STM to send triggered audio...")
+        print("Press Ctrl+C to stop.\n")
 
-    try:
-        # Wait until the first byte arrives
-        while True:
-            byte = ser.read(size=1)
+        try:
+            # Wait until the first byte arrives
+            while True:
+                byte = ser.read(size=1)
 
-            if byte:
-                samples.append(byte[0])
-                print("Trigger detected. Recording...")
-                break
+                if byte:
+                    samples.append(byte[0])
+                    print("Trigger detected. Recording...")
+                    break
 
-        empty_reads = 0
+            empty_reads = 0
 
-        while True:
-            data = ser.read(size=256)
+            while True:
+                data = ser.read(size=256)
 
-            if data:
-                samples.extend(data)
-                empty_reads = 0
-            else:
-                empty_reads += 1
+                if data:
+                    samples.extend(data)
+                    empty_reads = 0
+                else:
+                    empty_reads += 1
 
-            # If no data arrives for a short time, assume STM stopped recording
-            if empty_reads >= 2:
-                print("Trigger recording ended.")
-                break
+                # If no data arrives for a short time, assume STM stopped recording
+                if empty_reads >= 3:
+                    print("Trigger recording ended.")
+                    break
 
-    except KeyboardInterrupt:
-        print("Stopped by user.")
+        except KeyboardInterrupt:
+            print("Stopped by user.")
+            ser.write('O'.encode())
+            ser.write('O'.encode())
+            ser.close()
+            print(f"Received {len(samples)} samples.")
+            break
 
-    ser.close()
+        ser.write('O'.encode())
+        ser.write('O'.encode())
+        ser.close()
 
-    print(f"Received {len(samples)} samples.")
+        print(f"Received {len(samples)} samples.")
 
-    return np.array(samples, dtype=np.uint8)
+        outmodes(np.array(samples, dtype=np.uint8))
+
+# output function
+# =============
+def outmodes(raw_data):
+    mode = " "
+    while(mode not in {"wav","png", "csv"}):
+        mode = input("Enter the mode you want the data in (): ")
+    
+    # convert list to numpy array
+    data = np.array(raw_data)
+    # normalise to 0 to 255 range:
+    data = (data - data.min()) / data.max() # scale to 0-1
+    data = data * 255 # scale to 0-255
+    data = data.astype(np.uint8) # convert to uint8 type
+
+    # .wav audio file
+    if(mode=="wav"):
+        filename="test.wav"
+        with wave.open(filename, 'wb') as wf:
+            wf.setnchannels(1) # mono audio (single channel)
+            wf.setsampwidth(1) # 8 bits (1 byte ) per sample
+            wf.setframerate(SAMPLE_RATE) # set the sample rate that the data was recorded at
+            wf.writeframes(data.tobytes()) # write the audio data to the file
+
+    # .csv file raw audio data
+    if(mode=="csv"):
+        with open("audio.csv", "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["Sample Rate", SAMPLE_RATE])
+            writer.writerow(["Sample Number", "Amplitude"])
+
+            for i in range(len(data)):
+                sample = data[i]
+                writer.writerow([i, sample])
+
+    # png (waveform)
+    if(mode=="png"):
+        time = np.arange(len(data)) / SAMPLE_RATE
+        # plot
+        plt.figure()
+        plt.plot(time, data)
+        plt.title("Audio Waveform")
+        plt.xlabel("Time (seconds)")
+        plt.ylabel("Amplitude")
+        plt.grid(True)
+        plt.savefig("waveform.png")
+        plt.close()
+
+    print("Outputted Selected File")
 
 
 # Get Recording Mode
@@ -119,49 +179,8 @@ elif usr_selection=="D":
 input("run?")
 
 
-raw_data=[]
-
 if usr_selection=="M":
-    raw_data = record_manual(seconds)
+    record_manual(seconds)
 elif usr_selection=="D":
-    raw_data = record_manual(seconds)
+    record_distance_trigger(distance=distance)
 
-
-# convert list to numpy array
-data = np.array(raw_data)
-# normalise to 0 to 255 range:
-data = (data - data.min()) / data.max() # scale to 0-1
-data = data * 255 # scale to 0-255
-data = data.astype(np.uint8) # convert to uint8 type
-
-# .wav audio file
-filename="test.wav"
-with wave.open(filename, 'wb') as wf:
-    wf.setnchannels(1) # mono audio (single channel)
-    wf.setsampwidth(1) # 8 bits (1 byte ) per sample
-    wf.setframerate(SAMPLE_RATE) # set the sample rate that the data was recorded at
-    wf.writeframes(data.tobytes()) # write the audio data to the file
-
-# .csv file raw audio data
-with open("audio.csv", "w", newline="") as f:
-    writer = csv.writer(f)
-    writer.writerow(["Sample Rate", SAMPLE_RATE])
-    writer.writerow(["Sample Number", "Amplitude"])
-
-    for i in range(len(data)):
-        sample = data[i]
-        writer.writerow([i, sample])
-
-# png (waveform)
-time = np.arange(len(data)) / SAMPLE_RATE
-# plot
-plt.figure()
-plt.plot(time, data)
-plt.title("Audio Waveform")
-plt.xlabel("Time (seconds)")
-plt.ylabel("Amplitude")
-plt.grid(True)
-plt.savefig("waveform.png")
-plt.close()
-
-print("Saved wav, csv, and png files")

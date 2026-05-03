@@ -59,7 +59,6 @@ uint8_t rx_byte[2] = {0,0};
 uint8_t cmDist = 0;
 bool manual = false;
 bool distance = false;
-int read = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -178,7 +177,6 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   uint16_t sample_value = 0;
-  uint32_t last_ping_time = 0;
   HAL_TIM_Base_Start(&htim7);
   HAL_TIM_Base_Start(&htim16);
   HAL_UART_Receive_IT(&huart2, rx_byte, 2);
@@ -192,28 +190,19 @@ int main(void)
 		  HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
 	  }
 	  else if (distance) {
-	  		  uint8_t high = rx_byte[1] * 1.2;
-	  		  uint8_t low  = rx_byte[1] * 0.8;
-
-	  		  // 1. Check distance ONLY every 60 milliseconds
-	  		  if (HAL_GetTick() - last_ping_time > 250) {
-	  			  last_ping_time = HAL_GetTick(); // Reset the clock
-
-	  			  int current_dist = ultraRead();
-	  			  if (current_dist < low) {
-	  				  read = 1; // Hand is close, START recording!
-	  			  } else if (current_dist > high) {
-	  				  read = 0; // Hand left, STOP recording!
-	  			  }
-	  		  }
-
-	  		  // 2. If triggered, sample audio as fast as possible!
-	  		  if (read == 1) {
-	  			  HAL_SPI_Receive(&hspi1, (uint8_t *)&sample_value, 1, HAL_MAX_DELAY);
-	  			  filtered_sample = moving_average_filter(sample_value);
-	  			  HAL_UART_Transmit(&huart2, (uint8_t *)&filtered_sample, 1, HAL_MAX_DELAY);
-	  		  }
-	  	  }
+		  uint8_t high = rx_byte[1]*1.2;
+		  uint8_t low = rx_byte[1]*0.8;
+		  while(1){
+			  if(ultraRead()<low){
+			  		  HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 1);
+			  		  HAL_Delay(5);
+			  	  }
+			  if(ultraRead()>high) {
+			  		  HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 0);
+			  		  HAL_Delay(5);
+			  	  }
+		  }
+	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
