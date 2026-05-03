@@ -86,6 +86,13 @@ uint16_t moving_average_filter(uint16_t current_sample)
     }
     else
     {
+    	//filter out outliers and replace with previous sample
+    	uint16_t upper = previous_sample*1.25;
+    	uint16_t lower = previous_sample*0.75;
+    	if((current_sample<lower) || (current_sample>upper)){
+    		current_sample = previous_sample;
+    	}
+    	//find average
         avg = (previous_sample + current_sample) / 2;
     }
 
