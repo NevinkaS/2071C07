@@ -58,7 +58,6 @@ uint16_t avg;
 uint8_t rx_byte[2];
 bool manual = false;
 bool distance = false;
-int
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -105,6 +104,8 @@ int ultraRead(){
 	  int time = __HAL_TIM_GET_COUNTER(&htim16);
 
 	  int cm = time * 0.01715;
+
+	  return cm;
 }
 
 /* USER CODE END 0 */
@@ -157,10 +158,10 @@ int main(void)
 
 	  if(ultraRead()<10){
 	  		  HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 1);
-	  		  HAL_Delay(50);
+	  		  HAL_Delay(5);
 	  	  } else {
 	  		  HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 0);
-	  		  HAL_Delay(50);
+	  		  HAL_Delay(5);
 	  	  }
 
 	  if(manual){
@@ -169,10 +170,11 @@ int main(void)
 		  HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
 	  }
 	  else if (distance) {
-		  uint8_t high = rx_byte[1]*1.2;
-		  uint8_t low = rx_byte[1]*0.8;
+//		  uint8_t high = rx_byte[1]*1.2;
+//		  uint8_t low = rx_byte[1]*0.8;
 		  while(1){
-			  continue
+			  continue;
+		  }
 	  }
     /* USER CODE END WHILE */
 
