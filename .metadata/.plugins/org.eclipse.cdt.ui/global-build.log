@@ -98,3 +98,870 @@ arm-none-eabi-size  final_project.elf
   25416	     16	   2072	  27504	   6b70	final_project.elf
 Finished building: default.size.stdout
  
+13:13:42 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-size  final_project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  25416	     16	   2072	  27504	   6b70	final_project.elf
+Finished building: default.size.stdout
+ 
+13:14:18 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-size  final_project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  25416	     16	   2072	  27504	   6b70	final_project.elf
+Finished building: default.size.stdout
+ 
+13:14:40 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-size  final_project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  25416	     16	   2072	  27504	   6b70	final_project.elf
+Finished building: default.size.stdout
+ 
+13:15:16 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-size  final_project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  25416	     16	   2072	  27504	   6b70	final_project.elf
+Finished building: default.size.stdout
+ 
+13:16:01 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-size  final_project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  25416	     16	   2072	  27504	   6b70	final_project.elf
+Finished building: default.size.stdout
+ 
+13:16:44 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-size  final_project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  25416	     16	   2072	  27504	   6b70	final_project.elf
+Finished building: default.size.stdout
+ 
+13:17:16 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-size  final_project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  25416	     16	   2072	  27504	   6b70	final_project.elf
+Finished building: default.size.stdout
+ 
+13:21:33 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc "../Core/Src/stm32l4xx_hal_msp.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/stm32l4xx_hal_msp.d" -MT"Core/Src/stm32l4xx_hal_msp.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/stm32l4xx_hal_msp.o"
+arm-none-eabi-gcc "../Core/Src/stm32l4xx_it.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/stm32l4xx_it.d" -MT"Core/Src/stm32l4xx_it.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/stm32l4xx_it.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:168:42: warning: passing argument 2 of 'HAL_SPI_Receive' from incompatible pointer type [-Wincompatible-pointer-types]
+  168 |                   HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
+      |                                          ^~~~~~~~~~~~~
+      |                                          |
+      |                                          uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:430,
+                 from ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.c:20:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:797:69: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+  797 | HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                            ~~~~~~~~~^~~~~
+../Core/Src/main.c:170:45: warning: passing argument 2 of 'HAL_UART_Transmit' from incompatible pointer type [-Wincompatible-pointer-types]
+  170 |                   HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
+      |                                             ^~~~~~~~~~~~~~~~
+      |                                             |
+      |                                             uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:450:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:1694:79: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+ 1694 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                                ~~~~~~~~~~~~~~~^~~~~
+arm-none-eabi-gcc -o "final_project.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nevin\Documents\uni\2071\Project\2071C07\final_project\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="final_project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: final_project.elf
+ 
+arm-none-eabi-size  final_project.elf 
+arm-none-eabi-objdump -h -S final_project.elf  > "final_project.list"
+   text	   data	    bss	    dec	    hex	filename
+  25416	     16	   2072	  27504	   6b70	final_project.elf
+Finished building: default.size.stdout
+ 
+Finished building: final_project.list
+ 
+13:25:04 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:168:42: warning: passing argument 2 of 'HAL_SPI_Receive' from incompatible pointer type [-Wincompatible-pointer-types]
+  168 |                   HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
+      |                                          ^~~~~~~~~~~~~
+      |                                          |
+      |                                          uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:430,
+                 from ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.c:20:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:797:69: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+  797 | HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                            ~~~~~~~~~^~~~~
+../Core/Src/main.c:170:45: warning: passing argument 2 of 'HAL_UART_Transmit' from incompatible pointer type [-Wincompatible-pointer-types]
+  170 |                   HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
+      |                                             ^~~~~~~~~~~~~~~~
+      |                                             |
+      |                                             uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:450:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:1694:79: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+ 1694 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                                ~~~~~~~~~~~~~~~^~~~~
+arm-none-eabi-gcc -o "final_project.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nevin\Documents\uni\2071\Project\2071C07\final_project\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="final_project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: final_project.elf
+ 
+arm-none-eabi-size  final_project.elf 
+arm-none-eabi-objdump -h -S final_project.elf  > "final_project.list"
+   text	   data	    bss	    dec	    hex	filename
+  23520	     16	   2072	  25608	   6408	final_project.elf
+Finished building: default.size.stdout
+ 
+Finished building: final_project.list
+ 
+13:30:42 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:169:42: warning: passing argument 2 of 'HAL_SPI_Receive' from incompatible pointer type [-Wincompatible-pointer-types]
+  169 |                   HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
+      |                                          ^~~~~~~~~~~~~
+      |                                          |
+      |                                          uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:430,
+                 from ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.c:20:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:797:69: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+  797 | HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                            ~~~~~~~~~^~~~~
+../Core/Src/main.c:171:45: warning: passing argument 2 of 'HAL_UART_Transmit' from incompatible pointer type [-Wincompatible-pointer-types]
+  171 |                   HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
+      |                                             ^~~~~~~~~~~~~~~~
+      |                                             |
+      |                                             uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:450:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:1694:79: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+ 1694 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                                ~~~~~~~~~~~~~~~^~~~~
+../Core/Src/main.c:175:27: warning: unused variable 'low' [-Wunused-variable]
+  175 |                   uint8_t low = rx_byte[1]*0.8;
+      |                           ^~~
+../Core/Src/main.c:174:27: warning: unused variable 'high' [-Wunused-variable]
+  174 |                   uint8_t high = rx_byte[1]*1.2;
+      |                           ^~~~
+arm-none-eabi-gcc -o "final_project.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nevin\Documents\uni\2071\Project\2071C07\final_project\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="final_project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: final_project.elf
+ 
+arm-none-eabi-size  final_project.elf 
+arm-none-eabi-objdump -h -S final_project.elf  > "final_project.list"
+   text	   data	    bss	    dec	    hex	filename
+  25572	     16	   2072	  27660	   6c0c	final_project.elf
+Finished building: default.size.stdout
+ 
+Finished building: final_project.list
+ 
+13:32:03 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-size  final_project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  25572	     16	   2072	  27660	   6c0c	final_project.elf
+Finished building: default.size.stdout
+ 
+13:38:12 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:170:42: warning: passing argument 2 of 'HAL_SPI_Receive' from incompatible pointer type [-Wincompatible-pointer-types]
+  170 |                   HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
+      |                                          ^~~~~~~~~~~~~
+      |                                          |
+      |                                          uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:430,
+                 from ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.c:20:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:797:69: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+  797 | HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                            ~~~~~~~~~^~~~~
+../Core/Src/main.c:172:45: warning: passing argument 2 of 'HAL_UART_Transmit' from incompatible pointer type [-Wincompatible-pointer-types]
+  172 |                   HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
+      |                                             ^~~~~~~~~~~~~~~~
+      |                                             |
+      |                                             uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:450:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:1694:79: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+ 1694 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                                ~~~~~~~~~~~~~~~^~~~~
+../Core/Src/main.c:176:27: warning: unused variable 'low' [-Wunused-variable]
+  176 |                   uint8_t low = rx_byte[1]*0.8;
+      |                           ^~~
+../Core/Src/main.c:175:27: warning: unused variable 'high' [-Wunused-variable]
+  175 |                   uint8_t high = rx_byte[1]*1.2;
+      |                           ^~~~
+arm-none-eabi-gcc -o "final_project.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nevin\Documents\uni\2071\Project\2071C07\final_project\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="final_project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: final_project.elf
+ 
+arm-none-eabi-size  final_project.elf 
+arm-none-eabi-objdump -h -S final_project.elf  > "final_project.list"
+   text	   data	    bss	    dec	    hex	filename
+  25584	     16	   2072	  27672	   6c18	final_project.elf
+Finished building: default.size.stdout
+ 
+Finished building: final_project.list
+ 
+13:44:25 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:174:42: warning: passing argument 2 of 'HAL_SPI_Receive' from incompatible pointer type [-Wincompatible-pointer-types]
+  174 |                   HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
+      |                                          ^~~~~~~~~~~~~
+      |                                          |
+      |                                          uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:430,
+                 from ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.c:20:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:797:69: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+  797 | HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                            ~~~~~~~~~^~~~~
+../Core/Src/main.c:176:45: warning: passing argument 2 of 'HAL_UART_Transmit' from incompatible pointer type [-Wincompatible-pointer-types]
+  176 |                   HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
+      |                                             ^~~~~~~~~~~~~~~~
+      |                                             |
+      |                                             uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:450:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:1694:79: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+ 1694 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                                ~~~~~~~~~~~~~~~^~~~~
+../Core/Src/main.c:180:27: warning: unused variable 'low' [-Wunused-variable]
+  180 |                   uint8_t low = rx_byte[1]*0.8;
+      |                           ^~~
+../Core/Src/main.c:179:27: warning: unused variable 'high' [-Wunused-variable]
+  179 |                   uint8_t high = rx_byte[1]*1.2;
+      |                           ^~~~
+arm-none-eabi-gcc -o "final_project.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nevin\Documents\uni\2071\Project\2071C07\final_project\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="final_project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: final_project.elf
+ 
+arm-none-eabi-size  final_project.elf 
+arm-none-eabi-objdump -h -S final_project.elf  > "final_project.list"
+   text	   data	    bss	    dec	    hex	filename
+  25608	     16	   2072	  27696	   6c30	final_project.elf
+Finished building: default.size.stdout
+ 
+Finished building: final_project.list
+ 
+13:46:50 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:192:42: warning: passing argument 2 of 'HAL_SPI_Receive' from incompatible pointer type [-Wincompatible-pointer-types]
+  192 |                   HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
+      |                                          ^~~~~~~~~~~~~
+      |                                          |
+      |                                          uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:430,
+                 from ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.c:20:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:797:69: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+  797 | HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                            ~~~~~~~~~^~~~~
+../Core/Src/main.c:194:45: warning: passing argument 2 of 'HAL_UART_Transmit' from incompatible pointer type [-Wincompatible-pointer-types]
+  194 |                   HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
+      |                                             ^~~~~~~~~~~~~~~~
+      |                                             |
+      |                                             uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:450:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:1694:79: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+ 1694 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                                ~~~~~~~~~~~~~~~^~~~~
+../Core/Src/main.c:198:27: warning: unused variable 'low' [-Wunused-variable]
+  198 |                   uint8_t low = rx_byte[1]*0.8;
+      |                           ^~~
+../Core/Src/main.c:197:27: warning: unused variable 'high' [-Wunused-variable]
+  197 |                   uint8_t high = rx_byte[1]*1.2;
+      |                           ^~~~
+arm-none-eabi-gcc -o "final_project.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nevin\Documents\uni\2071\Project\2071C07\final_project\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="final_project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: final_project.elf
+ 
+arm-none-eabi-size  final_project.elf 
+arm-none-eabi-objdump -h -S final_project.elf  > "final_project.list"
+   text	   data	    bss	    dec	    hex	filename
+  25680	     16	   2072	  27768	   6c78	final_project.elf
+Finished building: default.size.stdout
+ 
+Finished building: final_project.list
+ 
+13:50:23 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:180:22: error: expected ';' before 'if'
+  180 |           ultraRead()
+      |                      ^
+      |                      ;
+  181 | 
+  182 |           if(manual){
+      |           ~~          
+../Core/Src/main.c:166:12: warning: unused variable 'sample_value' [-Wunused-variable]
+  166 |   uint16_t sample_value = 0;
+      |            ^~~~~~~~~~~~
+make: *** [Core/Src/subdir.mk:34: Core/Src/main.o] Error 1
+"make -j8 all" terminated with exit code 2. Build might be incomplete.
+13:50:38 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:183:42: warning: passing argument 2 of 'HAL_SPI_Receive' from incompatible pointer type [-Wincompatible-pointer-types]
+  183 |                   HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
+      |                                          ^~~~~~~~~~~~~
+      |                                          |
+      |                                          uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:430,
+                 from ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.c:20:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:797:69: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+  797 | HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                            ~~~~~~~~~^~~~~
+../Core/Src/main.c:185:45: warning: passing argument 2 of 'HAL_UART_Transmit' from incompatible pointer type [-Wincompatible-pointer-types]
+  185 |                   HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
+      |                                             ^~~~~~~~~~~~~~~~
+      |                                             |
+      |                                             uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:450:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:1694:79: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+ 1694 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                                ~~~~~~~~~~~~~~~^~~~~
+../Core/Src/main.c:189:27: warning: unused variable 'low' [-Wunused-variable]
+  189 |                   uint8_t low = rx_byte[1]*0.8;
+      |                           ^~~
+../Core/Src/main.c:188:27: warning: unused variable 'high' [-Wunused-variable]
+  188 |                   uint8_t high = rx_byte[1]*1.2;
+      |                           ^~~~
+arm-none-eabi-gcc -o "final_project.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nevin\Documents\uni\2071\Project\2071C07\final_project\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="final_project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: final_project.elf
+ 
+arm-none-eabi-size  final_project.elf 
+arm-none-eabi-objdump -h -S final_project.elf  > "final_project.list"
+   text	   data	    bss	    dec	    hex	filename
+  25604	     16	   2072	  27692	   6c2c	final_project.elf
+Finished building: default.size.stdout
+ 
+Finished building: final_project.list
+ 
+13:51:27 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:180:42: warning: passing argument 2 of 'HAL_SPI_Receive' from incompatible pointer type [-Wincompatible-pointer-types]
+  180 |                   HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
+      |                                          ^~~~~~~~~~~~~
+      |                                          |
+      |                                          uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:430,
+                 from ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.c:20:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:797:69: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+  797 | HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                            ~~~~~~~~~^~~~~
+../Core/Src/main.c:182:45: warning: passing argument 2 of 'HAL_UART_Transmit' from incompatible pointer type [-Wincompatible-pointer-types]
+  182 |                   HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
+      |                                             ^~~~~~~~~~~~~~~~
+      |                                             |
+      |                                             uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:450:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:1694:79: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+ 1694 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                                ~~~~~~~~~~~~~~~^~~~~
+../Core/Src/main.c:186:27: warning: unused variable 'low' [-Wunused-variable]
+  186 |                   uint8_t low = rx_byte[1]*0.8;
+      |                           ^~~
+../Core/Src/main.c:185:27: warning: unused variable 'high' [-Wunused-variable]
+  185 |                   uint8_t high = rx_byte[1]*1.2;
+      |                           ^~~~
+arm-none-eabi-gcc -o "final_project.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nevin\Documents\uni\2071\Project\2071C07\final_project\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="final_project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: final_project.elf
+ 
+arm-none-eabi-size  final_project.elf 
+arm-none-eabi-objdump -h -S final_project.elf  > "final_project.list"
+   text	   data	    bss	    dec	    hex	filename
+  25580	     16	   2072	  27668	   6c14	final_project.elf
+Finished building: default.size.stdout
+ 
+Finished building: final_project.list
+ 
+13:52:24 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:180:42: warning: passing argument 2 of 'HAL_SPI_Receive' from incompatible pointer type [-Wincompatible-pointer-types]
+  180 |                   HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
+      |                                          ^~~~~~~~~~~~~
+      |                                          |
+      |                                          uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:430,
+                 from ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.c:20:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:797:69: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+  797 | HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                            ~~~~~~~~~^~~~~
+../Core/Src/main.c:182:45: warning: passing argument 2 of 'HAL_UART_Transmit' from incompatible pointer type [-Wincompatible-pointer-types]
+  182 |                   HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
+      |                                             ^~~~~~~~~~~~~~~~
+      |                                             |
+      |                                             uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:450:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:1694:79: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+ 1694 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                                ~~~~~~~~~~~~~~~^~~~~
+../Core/Src/main.c:186:27: warning: unused variable 'low' [-Wunused-variable]
+  186 |                   uint8_t low = rx_byte[1]*0.8;
+      |                           ^~~
+../Core/Src/main.c:185:27: warning: unused variable 'high' [-Wunused-variable]
+  185 |                   uint8_t high = rx_byte[1]*1.2;
+      |                           ^~~~
+arm-none-eabi-gcc -o "final_project.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nevin\Documents\uni\2071\Project\2071C07\final_project\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="final_project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: final_project.elf
+ 
+arm-none-eabi-size  final_project.elf 
+arm-none-eabi-objdump -h -S final_project.elf  > "final_project.list"
+   text	   data	    bss	    dec	    hex	filename
+  25584	     16	   2072	  27672	   6c18	final_project.elf
+Finished building: default.size.stdout
+ 
+Finished building: final_project.list
+ 
+13:55:16 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:181:42: warning: passing argument 2 of 'HAL_SPI_Receive' from incompatible pointer type [-Wincompatible-pointer-types]
+  181 |                   HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
+      |                                          ^~~~~~~~~~~~~
+      |                                          |
+      |                                          uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:430,
+                 from ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.c:20:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:797:69: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+  797 | HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                            ~~~~~~~~~^~~~~
+../Core/Src/main.c:183:45: warning: passing argument 2 of 'HAL_UART_Transmit' from incompatible pointer type [-Wincompatible-pointer-types]
+  183 |                   HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
+      |                                             ^~~~~~~~~~~~~~~~
+      |                                             |
+      |                                             uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:450:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:1694:79: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+ 1694 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                                ~~~~~~~~~~~~~~~^~~~~
+../Core/Src/main.c:187:27: warning: unused variable 'low' [-Wunused-variable]
+  187 |                   uint8_t low = rx_byte[1]*0.8;
+      |                           ^~~
+../Core/Src/main.c:186:27: warning: unused variable 'high' [-Wunused-variable]
+  186 |                   uint8_t high = rx_byte[1]*1.2;
+      |                           ^~~~
+arm-none-eabi-gcc -o "final_project.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nevin\Documents\uni\2071\Project\2071C07\final_project\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="final_project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: final_project.elf
+ 
+arm-none-eabi-size  final_project.elf 
+arm-none-eabi-objdump -h -S final_project.elf  > "final_project.list"
+   text	   data	    bss	    dec	    hex	filename
+  25592	     16	   2072	  27680	   6c20	final_project.elf
+Finished building: default.size.stdout
+ 
+Finished building: final_project.list
+ 
+13:55:39 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:181:42: warning: passing argument 2 of 'HAL_SPI_Receive' from incompatible pointer type [-Wincompatible-pointer-types]
+  181 |                   HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
+      |                                          ^~~~~~~~~~~~~
+      |                                          |
+      |                                          uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:430,
+                 from ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.c:20:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:797:69: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+  797 | HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                            ~~~~~~~~~^~~~~
+../Core/Src/main.c:183:45: warning: passing argument 2 of 'HAL_UART_Transmit' from incompatible pointer type [-Wincompatible-pointer-types]
+  183 |                   HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
+      |                                             ^~~~~~~~~~~~~~~~
+      |                                             |
+      |                                             uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:450:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:1694:79: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+ 1694 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                                ~~~~~~~~~~~~~~~^~~~~
+../Core/Src/main.c:187:27: warning: unused variable 'low' [-Wunused-variable]
+  187 |                   uint8_t low = rx_byte[1]*0.8;
+      |                           ^~~
+../Core/Src/main.c:186:27: warning: unused variable 'high' [-Wunused-variable]
+  186 |                   uint8_t high = rx_byte[1]*1.2;
+      |                           ^~~~
+arm-none-eabi-gcc -o "final_project.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nevin\Documents\uni\2071\Project\2071C07\final_project\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="final_project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: final_project.elf
+ 
+arm-none-eabi-size  final_project.elf 
+arm-none-eabi-objdump -h -S final_project.elf  > "final_project.list"
+   text	   data	    bss	    dec	    hex	filename
+  25592	     16	   2072	  27680	   6c20	final_project.elf
+Finished building: default.size.stdout
+ 
+Finished building: final_project.list
+ 
+13:56:34 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:180:42: warning: passing argument 2 of 'HAL_SPI_Receive' from incompatible pointer type [-Wincompatible-pointer-types]
+  180 |                   HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
+      |                                          ^~~~~~~~~~~~~
+      |                                          |
+      |                                          uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:430,
+                 from ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.c:20:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:797:69: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+  797 | HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                            ~~~~~~~~~^~~~~
+../Core/Src/main.c:182:45: warning: passing argument 2 of 'HAL_UART_Transmit' from incompatible pointer type [-Wincompatible-pointer-types]
+  182 |                   HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
+      |                                             ^~~~~~~~~~~~~~~~
+      |                                             |
+      |                                             uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:450:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:1694:79: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+ 1694 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                                ~~~~~~~~~~~~~~~^~~~~
+../Core/Src/main.c:186:27: warning: unused variable 'low' [-Wunused-variable]
+  186 |                   uint8_t low = rx_byte[1]*0.8;
+      |                           ^~~
+../Core/Src/main.c:185:27: warning: unused variable 'high' [-Wunused-variable]
+  185 |                   uint8_t high = rx_byte[1]*1.2;
+      |                           ^~~~
+arm-none-eabi-gcc -o "final_project.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nevin\Documents\uni\2071\Project\2071C07\final_project\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="final_project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: final_project.elf
+ 
+arm-none-eabi-size  final_project.elf 
+arm-none-eabi-objdump -h -S final_project.elf  > "final_project.list"
+   text	   data	    bss	    dec	    hex	filename
+  25592	     16	   2072	  27680	   6c20	final_project.elf
+Finished building: default.size.stdout
+ 
+Finished building: final_project.list
+ 
+13:57:08 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:180:42: warning: passing argument 2 of 'HAL_SPI_Receive' from incompatible pointer type [-Wincompatible-pointer-types]
+  180 |                   HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
+      |                                          ^~~~~~~~~~~~~
+      |                                          |
+      |                                          uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:430,
+                 from ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.c:20:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:797:69: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+  797 | HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                            ~~~~~~~~~^~~~~
+../Core/Src/main.c:182:45: warning: passing argument 2 of 'HAL_UART_Transmit' from incompatible pointer type [-Wincompatible-pointer-types]
+  182 |                   HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
+      |                                             ^~~~~~~~~~~~~~~~
+      |                                             |
+      |                                             uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:450:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:1694:79: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+ 1694 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                                ~~~~~~~~~~~~~~~^~~~~
+../Core/Src/main.c:186:27: warning: unused variable 'low' [-Wunused-variable]
+  186 |                   uint8_t low = rx_byte[1]*0.8;
+      |                           ^~~
+../Core/Src/main.c:185:27: warning: unused variable 'high' [-Wunused-variable]
+  185 |                   uint8_t high = rx_byte[1]*1.2;
+      |                           ^~~~
+arm-none-eabi-gcc -o "final_project.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nevin\Documents\uni\2071\Project\2071C07\final_project\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="final_project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: final_project.elf
+ 
+arm-none-eabi-size  final_project.elf 
+arm-none-eabi-objdump -h -S final_project.elf  > "final_project.list"
+   text	   data	    bss	    dec	    hex	filename
+  25584	     16	   2072	  27672	   6c18	final_project.elf
+Finished building: default.size.stdout
+ 
+Finished building: final_project.list
+ 
+13:57:44 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:180:42: warning: passing argument 2 of 'HAL_SPI_Receive' from incompatible pointer type [-Wincompatible-pointer-types]
+  180 |                   HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
+      |                                          ^~~~~~~~~~~~~
+      |                                          |
+      |                                          uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:430,
+                 from ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.c:20:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:797:69: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+  797 | HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                            ~~~~~~~~~^~~~~
+../Core/Src/main.c:182:45: warning: passing argument 2 of 'HAL_UART_Transmit' from incompatible pointer type [-Wincompatible-pointer-types]
+  182 |                   HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
+      |                                             ^~~~~~~~~~~~~~~~
+      |                                             |
+      |                                             uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:450:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:1694:79: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+ 1694 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                                ~~~~~~~~~~~~~~~^~~~~
+../Core/Src/main.c:186:27: warning: unused variable 'low' [-Wunused-variable]
+  186 |                   uint8_t low = rx_byte[1]*0.8;
+      |                           ^~~
+../Core/Src/main.c:185:27: warning: unused variable 'high' [-Wunused-variable]
+  185 |                   uint8_t high = rx_byte[1]*1.2;
+      |                           ^~~~
+arm-none-eabi-gcc -o "final_project.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nevin\Documents\uni\2071\Project\2071C07\final_project\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="final_project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: final_project.elf
+ 
+arm-none-eabi-size  final_project.elf 
+arm-none-eabi-objdump -h -S final_project.elf  > "final_project.list"
+   text	   data	    bss	    dec	    hex	filename
+  25584	     16	   2072	  27672	   6c18	final_project.elf
+Finished building: default.size.stdout
+ 
+Finished building: final_project.list
+ 
+13:58:37 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:181:42: warning: passing argument 2 of 'HAL_SPI_Receive' from incompatible pointer type [-Wincompatible-pointer-types]
+  181 |                   HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
+      |                                          ^~~~~~~~~~~~~
+      |                                          |
+      |                                          uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:430,
+                 from ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.c:20:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:797:69: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+  797 | HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                            ~~~~~~~~~^~~~~
+../Core/Src/main.c:183:45: warning: passing argument 2 of 'HAL_UART_Transmit' from incompatible pointer type [-Wincompatible-pointer-types]
+  183 |                   HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
+      |                                             ^~~~~~~~~~~~~~~~
+      |                                             |
+      |                                             uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:450:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:1694:79: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+ 1694 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                                ~~~~~~~~~~~~~~~^~~~~
+../Core/Src/main.c:187:27: warning: unused variable 'low' [-Wunused-variable]
+  187 |                   uint8_t low = rx_byte[1]*0.8;
+      |                           ^~~
+../Core/Src/main.c:186:27: warning: unused variable 'high' [-Wunused-variable]
+  186 |                   uint8_t high = rx_byte[1]*1.2;
+      |                           ^~~~
+arm-none-eabi-gcc -o "final_project.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nevin\Documents\uni\2071\Project\2071C07\final_project\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="final_project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: final_project.elf
+ 
+arm-none-eabi-size  final_project.elf 
+arm-none-eabi-objdump -h -S final_project.elf  > "final_project.list"
+   text	   data	    bss	    dec	    hex	filename
+  25568	     16	   2072	  27656	   6c08	final_project.elf
+Finished building: default.size.stdout
+ 
+Finished building: final_project.list
+ 
+13:58:59 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-size  final_project.elf 
+   text	   data	    bss	    dec	    hex	filename
+  25568	     16	   2072	  27656	   6c08	final_project.elf
+Finished building: default.size.stdout
+ 
+13:59:36 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:181:42: warning: passing argument 2 of 'HAL_SPI_Receive' from incompatible pointer type [-Wincompatible-pointer-types]
+  181 |                   HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
+      |                                          ^~~~~~~~~~~~~
+      |                                          |
+      |                                          uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:430,
+                 from ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.c:20:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:797:69: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+  797 | HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                            ~~~~~~~~~^~~~~
+../Core/Src/main.c:183:45: warning: passing argument 2 of 'HAL_UART_Transmit' from incompatible pointer type [-Wincompatible-pointer-types]
+  183 |                   HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
+      |                                             ^~~~~~~~~~~~~~~~
+      |                                             |
+      |                                             uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:450:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:1694:79: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+ 1694 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                                ~~~~~~~~~~~~~~~^~~~~
+../Core/Src/main.c:187:27: warning: unused variable 'low' [-Wunused-variable]
+  187 |                   uint8_t low = rx_byte[1]*0.8;
+      |                           ^~~
+../Core/Src/main.c:186:27: warning: unused variable 'high' [-Wunused-variable]
+  186 |                   uint8_t high = rx_byte[1]*1.2;
+      |                           ^~~~
+arm-none-eabi-gcc -o "final_project.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nevin\Documents\uni\2071\Project\2071C07\final_project\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="final_project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: final_project.elf
+ 
+arm-none-eabi-size  final_project.elf 
+arm-none-eabi-objdump -h -S final_project.elf  > "final_project.list"
+   text	   data	    bss	    dec	    hex	filename
+  25584	     16	   2072	  27672	   6c18	final_project.elf
+Finished building: default.size.stdout
+ 
+Finished building: final_project.list
+ 
+14:01:09 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:197:42: warning: passing argument 2 of 'HAL_SPI_Receive' from incompatible pointer type [-Wincompatible-pointer-types]
+  197 |                   HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
+      |                                          ^~~~~~~~~~~~~
+      |                                          |
+      |                                          uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:430,
+                 from ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.c:20:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:797:69: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+  797 | HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                            ~~~~~~~~~^~~~~
+../Core/Src/main.c:199:45: warning: passing argument 2 of 'HAL_UART_Transmit' from incompatible pointer type [-Wincompatible-pointer-types]
+  199 |                   HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
+      |                                             ^~~~~~~~~~~~~~~~
+      |                                             |
+      |                                             uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:450:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:1694:79: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+ 1694 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                                ~~~~~~~~~~~~~~~^~~~~
+../Core/Src/main.c:203:27: warning: unused variable 'low' [-Wunused-variable]
+  203 |                   uint8_t low = rx_byte[1]*0.8;
+      |                           ^~~
+../Core/Src/main.c:202:27: warning: unused variable 'high' [-Wunused-variable]
+  202 |                   uint8_t high = rx_byte[1]*1.2;
+      |                           ^~~~
+arm-none-eabi-gcc -o "final_project.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nevin\Documents\uni\2071\Project\2071C07\final_project\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="final_project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: final_project.elf
+ 
+arm-none-eabi-size  final_project.elf 
+arm-none-eabi-objdump -h -S final_project.elf  > "final_project.list"
+   text	   data	    bss	    dec	    hex	filename
+  25640	     16	   2072	  27728	   6c50	final_project.elf
+Finished building: default.size.stdout
+ 
+Finished building: final_project.list
+ 
+14:01:45 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:197:42: warning: passing argument 2 of 'HAL_SPI_Receive' from incompatible pointer type [-Wincompatible-pointer-types]
+  197 |                   HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
+      |                                          ^~~~~~~~~~~~~
+      |                                          |
+      |                                          uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:430,
+                 from ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.c:20:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:797:69: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+  797 | HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                            ~~~~~~~~~^~~~~
+../Core/Src/main.c:199:45: warning: passing argument 2 of 'HAL_UART_Transmit' from incompatible pointer type [-Wincompatible-pointer-types]
+  199 |                   HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
+      |                                             ^~~~~~~~~~~~~~~~
+      |                                             |
+      |                                             uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:450:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:1694:79: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+ 1694 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                                ~~~~~~~~~~~~~~~^~~~~
+../Core/Src/main.c:203:27: warning: unused variable 'low' [-Wunused-variable]
+  203 |                   uint8_t low = rx_byte[1]*0.8;
+      |                           ^~~
+../Core/Src/main.c:202:27: warning: unused variable 'high' [-Wunused-variable]
+  202 |                   uint8_t high = rx_byte[1]*1.2;
+      |                           ^~~~
+arm-none-eabi-gcc -o "final_project.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nevin\Documents\uni\2071\Project\2071C07\final_project\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="final_project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: final_project.elf
+ 
+arm-none-eabi-size  final_project.elf 
+arm-none-eabi-objdump -h -S final_project.elf  > "final_project.list"
+   text	   data	    bss	    dec	    hex	filename
+  25624	     16	   2072	  27712	   6c40	final_project.elf
+Finished building: default.size.stdout
+ 
+Finished building: final_project.list
+ 
+14:02:18 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:197:42: warning: passing argument 2 of 'HAL_SPI_Receive' from incompatible pointer type [-Wincompatible-pointer-types]
+  197 |                   HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
+      |                                          ^~~~~~~~~~~~~
+      |                                          |
+      |                                          uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:430,
+                 from ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.c:20:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:797:69: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+  797 | HAL_StatusTypeDef HAL_SPI_Receive(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                            ~~~~~~~~~^~~~~
+../Core/Src/main.c:199:45: warning: passing argument 2 of 'HAL_UART_Transmit' from incompatible pointer type [-Wincompatible-pointer-types]
+  199 |                   HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
+      |                                             ^~~~~~~~~~~~~~~~
+      |                                             |
+      |                                             uint16_t * {aka short unsigned int *}
+In file included from ../Core/Inc/stm32l4xx_hal_conf.h:450:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:1694:79: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
+ 1694 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                                ~~~~~~~~~~~~~~~^~~~~
+../Core/Src/main.c:203:27: warning: unused variable 'low' [-Wunused-variable]
+  203 |                   uint8_t low = rx_byte[1]*0.8;
+      |                           ^~~
+../Core/Src/main.c:202:27: warning: unused variable 'high' [-Wunused-variable]
+  202 |                   uint8_t high = rx_byte[1]*1.2;
+      |                           ^~~~
+arm-none-eabi-gcc -o "final_project.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nevin\Documents\uni\2071\Project\2071C07\final_project\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="final_project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: final_project.elf
+ 
+arm-none-eabi-size  final_project.elf 
+arm-none-eabi-objdump -h -S final_project.elf  > "final_project.list"
+   text	   data	    bss	    dec	    hex	filename
+  25648	     16	   2072	  27736	   6c58	final_project.elf
+Finished building: default.size.stdout
+ 
+Finished building: final_project.list
+ 

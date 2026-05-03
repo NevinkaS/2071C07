@@ -61,7 +61,7 @@ void Error_Handler(void);
 #define MCO_GPIO_Port GPIOA
 #define VCP_TX_Pin GPIO_PIN_2
 #define VCP_TX_GPIO_Port GPIOA
-#define trig_Pin GPIO_PIN_10
+#define trig_Pin GPIO_PIN_8
 #define trig_GPIO_Port GPIOA
 #define echo_Pin GPIO_PIN_11
 #define echo_GPIO_Port GPIOA

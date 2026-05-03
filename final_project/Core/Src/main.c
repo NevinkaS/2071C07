@@ -56,6 +56,7 @@ uint16_t current_sample = 0;
 uint16_t filtered_sample = 0;
 uint16_t avg;
 uint8_t rx_byte[2];
+uint8_t cmDist = 0;
 bool manual = false;
 bool distance = false;
 /* USER CODE END PV */
@@ -93,18 +94,43 @@ uint16_t moving_average_filter(uint16_t current_sample)
 }
 
 int ultraRead(){
-	  __HAL_TIM_SET_COUNTER(&htim16, 0);
-	  HAL_GPIO_WritePin(trig_GPIO_Port, trig_Pin, 1);
-	  while(__HAL_TIM_GET_COUNTER(&htim16) <= 10){;}
-	  HAL_GPIO_WritePin(trig_GPIO_Port, trig_Pin, 0);
 
-	  while(HAL_GPIO_ReadPin(echo_GPIO_Port,echo_Pin)==0){;}
-	  __HAL_TIM_SET_COUNTER(&htim16, 0);
-	  while(HAL_GPIO_ReadPin(echo_GPIO_Port,echo_Pin)==1){;}
-	  int time = __HAL_TIM_GET_COUNTER(&htim16);
+	__HAL_TIM_SET_COUNTER(&htim16, 0);
+	HAL_GPIO_WritePin(trig_GPIO_Port, trig_Pin, 1);
+	while(__HAL_TIM_GET_COUNTER(&htim16) <= 10){;}
+	HAL_GPIO_WritePin(trig_GPIO_Port, trig_Pin, 0);
 
-	  int cm = time * 0.01715;
+	// TIMEOUT VARIABLES (Safety Net)
+	uint32_t timeout_counter = 0;
+	const uint32_t MAX_TIMEOUT = 60000;
 
+	// 1. Wait for Echo to go HIGH (with timeout)
+	while(HAL_GPIO_ReadPin(echo_GPIO_Port,echo_Pin)==0){
+		timeout_counter++;
+		if (timeout_counter > MAX_TIMEOUT) {
+			return 999; // Return fake distance to indicate error
+		}
+	}
+
+	__HAL_TIM_SET_COUNTER(&htim16, 0);
+
+	// 2. Wait for Echo to go LOW (with timeout)
+	while(HAL_GPIO_ReadPin(echo_GPIO_Port,echo_Pin)==1){
+		if (__HAL_TIM_GET_COUNTER(&htim16) > 38000) { // 38ms is max sensor range
+			return 999; // Return fake distance to indicate error
+		}
+	}
+
+	int time = __HAL_TIM_GET_COUNTER(&htim16);
+	int cm = time * 0.01715;
+
+//		  if(cm<10){
+//			  HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 1);
+//			  HAL_Delay(50);
+//		  } else {
+//			  HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 0);
+//			  HAL_Delay(50);
+//		  }
 	  return cm;
 }
 
@@ -150,19 +176,22 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  uint16_t sample_value;
+  uint16_t sample_value = 0;
   HAL_TIM_Base_Start(&htim7);
+  HAL_TIM_Base_Start(&htim16);
   HAL_UART_Receive_IT(&huart2, rx_byte, 2);
   while (1)
   {
 
-	  if(ultraRead()<10){
+	  if(ultraRead()<8){
 	  		  HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 1);
 	  		  HAL_Delay(5);
-	  	  } else {
+	  	  }
+	  if(ultraRead()>12) {
 	  		  HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 0);
 	  		  HAL_Delay(5);
 	  	  }
+//	  ultraRead();
 
 	  if(manual){
 		  HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
@@ -170,10 +199,10 @@ int main(void)
 		  HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
 	  }
 	  else if (distance) {
-//		  uint8_t high = rx_byte[1]*1.2;
-//		  uint8_t low = rx_byte[1]*0.8;
+		  uint8_t high = rx_byte[1]*1.2;
+		  uint8_t low = rx_byte[1]*0.8;
 		  while(1){
-			  continue;
+			  break;
 		  }
 	  }
     /* USER CODE END WHILE */
@@ -394,7 +423,7 @@ static void MX_TIM16_Init(void)
 
   /* USER CODE END TIM16_Init 1 */
   htim16.Instance = TIM16;
-  htim16.Init.Prescaler = 0;
+  htim16.Init.Prescaler = 31;
   htim16.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim16.Init.Period = 65535;
   htim16.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
