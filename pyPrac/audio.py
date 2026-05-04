@@ -16,7 +16,7 @@ for device in devices:
     print(device)
 
 SERIAL_PORT = "COM10"
-BAUD_RATE = 115200
+BAUD_RATE = 921600
 SAMPLE_RATE = 8333
 raw_data = []
 
