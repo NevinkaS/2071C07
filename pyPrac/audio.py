@@ -17,7 +17,7 @@ for device in devices:
 
 SERIAL_PORT = "COM10"
 BAUD_RATE = 921600
-SAMPLE_RATE = 8333
+SAMPLE_RATE = 8265
 raw_data = []
 
 # Recording functions
@@ -26,7 +26,7 @@ def record_manual(duration_seconds):
     num_samples = SAMPLE_RATE * duration_seconds
 
     print(f"\nOpening {SERIAL_PORT} at {BAUD_RATE} baud...")
-    ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=2)
+    ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
     ser.write('M'.encode())
     ser.write(duration_seconds.to_bytes(1, byteorder='little'))
 
@@ -34,10 +34,10 @@ def record_manual(duration_seconds):
 
     print("Recording started...")
     i=0
-    while i < num_samples:
-        byte = ser.read(size=1)
-        if byte:
-            samples.append(byte[0])
+    while i*100 < num_samples:
+        bytes = ser.read(size=100)
+        if bytes:
+            samples.extend(bytes)
         i+=1
 
     ser.write('O'.encode())
@@ -56,7 +56,7 @@ def record_distance_trigger(distance):
     """
     while(True):
         print(f"\nOpening {SERIAL_PORT} at {BAUD_RATE} baud...")
-        ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
+        ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=0.3)
         ser.write('D'.encode())
         ser.write(distance.to_bytes(1, byteorder='little'))
 
@@ -79,7 +79,7 @@ def record_distance_trigger(distance):
             empty_reads = 0
 
             while True:
-                data = ser.read(size=256)
+                data = ser.read(size=100)
 
                 if data:
                     samples.extend(data)
@@ -118,7 +118,8 @@ def outmodes(raw_data):
     # convert list to numpy array
     data = np.array(raw_data)
     # normalise to 0 to 255 range:
-    data = (data - data.min()) / data.max() # scale to 0-1
+    data = (data - data.min()) / (data.max() - data.min())
+    # data = (data - data.min()) / data.max() # scale to 0-1
     data = data * 255 # scale to 0-255
     data = data.astype(np.uint8) # convert to uint8 type
 
