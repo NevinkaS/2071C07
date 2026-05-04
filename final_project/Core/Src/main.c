@@ -43,11 +43,13 @@
 ADC_HandleTypeDef hadc1;
 
 SPI_HandleTypeDef hspi1;
+DMA_HandleTypeDef hdma_spi1_rx;
 
 TIM_HandleTypeDef htim7;
 TIM_HandleTypeDef htim16;
 
 UART_HandleTypeDef huart2;
+DMA_HandleTypeDef hdma_usart2_tx;
 
 /* USER CODE BEGIN PV */
 uint16_t previous_sample = 0;
@@ -60,11 +62,15 @@ uint8_t cmDist = 0;
 bool manual = false;
 bool distance = false;
 int read = 0;
+uint8_t spi_rx_buffer[200];           // Circular buffer for incoming mic data
+uint8_t uart_tx_buffer_half1[100];    // Outgoing buffer for the first half
+uint8_t uart_tx_buffer_half2[100];    // Outgoing buffer for the second half
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_TIM16_Init(void);
@@ -87,11 +93,11 @@ uint16_t moving_average_filter(uint16_t current_sample)
     else
     {
     	//filter out outliers and replace with previous sample
-    	uint16_t upper = previous_sample*1.25;
-    	uint16_t lower = previous_sample*0.75;
-    	if((current_sample<lower) || (current_sample>upper)){
-    		current_sample = previous_sample;
-    	}
+//    	uint16_t upper = previous_sample*1.25;
+//    	uint16_t lower = previous_sample*0.75;
+//    	if((current_sample<lower) || (current_sample>upper)){
+//    		current_sample = previous_sample;
+//    	}
     	//find average
         avg = (previous_sample + current_sample) / 2;
     }
@@ -173,6 +179,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART2_UART_Init();
   MX_SPI1_Init();
   MX_TIM16_Init();
@@ -194,9 +201,9 @@ int main(void)
 //	  ultraRead();
 
 	  if(manual){
-		  HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
-		  filtered_sample = moving_average_filter(sample_value);
-		  HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
+//		  HAL_SPI_Receive(&hspi1,&sample_value,1,HAL_MAX_DELAY);
+//		  filtered_sample = moving_average_filter(sample_value);
+//		  HAL_UART_Transmit(&huart2,&filtered_sample,1,HAL_MAX_DELAY);
 	  }
 	  else if (distance) {
 	  		  uint8_t high = rx_byte[1] * 1.2;
@@ -207,19 +214,23 @@ int main(void)
 	  			  last_ping_time = HAL_GetTick(); // Reset the clock
 
 	  			  int current_dist = ultraRead();
-	  			  if (current_dist < low) {
+	  			  if (current_dist < low && read==0) {
 	  				  read = 1; // Hand is close, START recording!
-	  			  } else if (current_dist > high) {
+
+	  				  HAL_SPI_Receive_DMA(&hspi1, spi_rx_buffer, 200);
+	  			  } else if (current_dist > high && read==1) {
 	  				  read = 0; // Hand left, STOP recording!
+
+	  				  HAL_SPI_DMAStop(&hspi1);
 	  			  }
 	  		  }
 
-	  		  // 2. If triggered, sample audio as fast as possible!
-	  		  if (read == 1) {
-	  			  HAL_SPI_Receive(&hspi1, (uint8_t *)&sample_value, 1, HAL_MAX_DELAY);
-	  			  filtered_sample = moving_average_filter(sample_value);
-	  			  HAL_UART_Transmit(&huart2, (uint8_t *)&filtered_sample, 1, HAL_MAX_DELAY);
-	  		  }
+//	  		  // 2. If triggered, sample audio as fast as possible!
+//	  		  if (read == 1) {
+//	  			  HAL_SPI_Receive(&hspi1, (uint8_t *)&sample_value, 1, HAL_MAX_DELAY);
+//	  			  filtered_sample = moving_average_filter(sample_value);
+//	  			  HAL_UART_Transmit(&huart2, (uint8_t *)&filtered_sample, 1, HAL_MAX_DELAY);
+//	  		  }
 	  	  }
     /* USER CODE END WHILE */
 
@@ -491,6 +502,25 @@ static void MX_USART2_UART_Init(void)
 }
 
 /**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Channel2_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel2_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel2_IRQn);
+  /* DMA1_Channel7_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel7_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel7_IRQn);
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -545,6 +575,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 			manual = true;
 			distance = false;
 			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 1);
+			HAL_SPI_Receive_DMA(&hspi1, spi_rx_buffer, 200);
 		} else if (rx_byte[0]=='D'){
 			manual = false;
 			distance = true;
@@ -553,10 +584,43 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 0);
 			manual = false;
 			distance = false;
+
+			HAL_SPI_DMAStop(&hspi1);
 		}
 	}
 
 	HAL_UART_Receive_IT(&huart2, rx_byte, 2);
+}
+
+// TRIGGER 1: DMA is halfway done (bytes 0 to 99 are ready)
+void HAL_SPI_RxHalfCpltCallback(SPI_HandleTypeDef *hspi) {
+    if (hspi->Instance == SPI1) {
+    	HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+
+        // Filter the FIRST half of the RX buffer
+        for(int i = 0; i < 100; i++) {
+            uart_tx_buffer_half1[i] = (uint8_t)moving_average_filter((uint16_t)spi_rx_buffer[i]);
+        }
+
+        // Send the filtered half to the PC
+        HAL_UART_Transmit_DMA(&huart2, uart_tx_buffer_half1, 100);
+    }
+}
+
+// TRIGGER 2: DMA is fully done (bytes 100 to 199 are ready)
+void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi) {
+    if (hspi->Instance == SPI1) {
+
+    	HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+
+        // Filter the SECOND half of the RX buffer
+        for(int i = 0; i < 100; i++) {
+            uart_tx_buffer_half2[i] = (uint8_t)moving_average_filter((uint16_t)spi_rx_buffer[i + 100]);
+        }
+
+        // Send the second filtered half to the PC
+        HAL_UART_Transmit_DMA(&huart2, uart_tx_buffer_half2, 100);
+    }
 }
 
 /* USER CODE END 4 */

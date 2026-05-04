@@ -12,10 +12,10 @@ import csv
 # poll serial devices
 devices = serial.tools.list_ports.comports()
 
-# for device in devices:
-#     print(device)
+for device in devices:
+    print(device)
 
-SERIAL_PORT = "COM11"
+SERIAL_PORT = "COM10"
 BAUD_RATE = 115200
 SAMPLE_RATE = 8333
 raw_data = []
