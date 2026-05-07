@@ -2,37 +2,35 @@ import numpy as np
 import wave
 import serial
 import serial.tools.list_ports
-import numpy as np
-import wave
-import serial
-import serial.tools.list_ports
 import matplotlib.pyplot as plt
 import csv
 
-# poll serial devices
-devices = serial.tools.list_ports.comports()
+# # poll serial devices
+# devices = serial.tools.list_ports.comports()
+# for device in devices:
+#     print(device)
 
-for device in devices:
-    print(device)
-
+# Magic Values
 SERIAL_PORT = "COM10"
 BAUD_RATE = 921600
 SAMPLE_RATE = 8265
-raw_data = []
 
 # Recording functions
 # =========================
 def record_manual(duration_seconds):
+    # get the number of samples required for x seconds
     num_samples = SAMPLE_RATE * duration_seconds
 
+    # connect to STM and start sending samples in the selected mode's method
     print(f"\nOpening {SERIAL_PORT} at {BAUD_RATE} baud...")
     ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
     ser.write('M'.encode())
     ser.write(duration_seconds.to_bytes(1, byteorder='little'))
 
-    samples = []
 
+    # record the sent samples
     print("Recording started...")
+    samples = []
     i=0
     while i*100 < num_samples:
         bytes = ser.read(size=100)
@@ -40,12 +38,16 @@ def record_manual(duration_seconds):
             samples.extend(bytes)
         i+=1
 
+    # since samples are gotten in chunks of 100, cut down to required amount
+    samples = samples[:num_samples]
+    # end the sending of samples and disconnect
     ser.write('O'.encode())
     ser.write('O'.encode())
     print("Recording ended.")
     print(f"Received {len(samples)} samples.")
     ser.close()
 
+    # call outmodes() to select the output mode
     outmodes(np.array(samples, dtype=np.uint8))
 
 
@@ -54,33 +56,33 @@ def record_distance_trigger(distance):
     This assumes the Processing STM only sends data to the PC when
     the ultrasonic sensor has triggered recording.
     """
+    # This needs to keep running while user doesnt leave this mode
     while(True):
+
+        # connect to STM and start sending samples in the selected mode's method
         print(f"\nOpening {SERIAL_PORT} at {BAUD_RATE} baud...")
-        ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=0.3)
+        ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=0.1)
         ser.write('D'.encode())
         ser.write(distance.to_bytes(1, byteorder='little'))
 
         samples = []
-
         print("Distance Trigger Mode started.")
         print("Waiting for STM to send triggered audio...")
         print("Press Ctrl+C to stop.\n")
 
         try:
-            # Wait until the first byte arrives
+            # wait until the first byte arrives
             while True:
                 byte = ser.read(size=1)
-
                 if byte:
                     samples.append(byte[0])
                     print("Trigger detected. Recording...")
                     break
 
+            # read incoming audio samples, saving the amount of empty reads (timeouts)
             empty_reads = 0
-
             while True:
                 data = ser.read(size=100)
-
                 if data:
                     samples.extend(data)
                     empty_reads = 0
@@ -88,38 +90,45 @@ def record_distance_trigger(distance):
                     empty_reads += 1
 
                 # If no data arrives for a short time, assume STM stopped recording
+                # 3 is chosen for safety in case of a dropout
                 if empty_reads >= 3:
                     print("Trigger recording ended.")
                     break
 
+        # if user decides to change the mode by Ctrl+C then stop recording straight away and only process currently save data 
+        # (bytes in transmission are forgotten about)
         except KeyboardInterrupt:
             print("Stopped by user.")
+            # end the sending of samples and disconnect
             ser.write('O'.encode())
             ser.write('O'.encode())
             ser.close()
             print(f"Received {len(samples)} samples.")
             break
 
+        # end the sending of samples and disconnect
         ser.write('O'.encode())
         ser.write('O'.encode())
         ser.close()
 
         print(f"Received {len(samples)} samples.")
 
+        # call outmodes() to select the output mode
         outmodes(np.array(samples, dtype=np.uint8))
 
-# output function
-# =============
+# Output function
+# =========================
 def outmodes(raw_data):
+    # user selection for mode
     mode = " "
     while(mode not in {"wav","png", "csv"}):
-        mode = input("Enter the mode you want the data in (): ")
+        mode = input("Enter the mode you want the data in (wav, png, csv): ")
     
     # convert list to numpy array
     data = np.array(raw_data)
     # normalise to 0 to 255 range:
+    # data = (data - data.min()) / data.max()
     data = (data - data.min()) / (data.max() - data.min())
-    # data = (data - data.min()) / data.max() # scale to 0-1
     data = data * 255 # scale to 0-255
     data = data.astype(np.uint8) # convert to uint8 type
 
@@ -134,12 +143,11 @@ def outmodes(raw_data):
 
     # .csv file raw audio data
     if(mode=="csv"):
-        with open("audio.csv", "w", newline="") as f:
+        with open("audio.csv", "w", newline="") as f: # open csv text file
             writer = csv.writer(f)
-            writer.writerow(["Sample Rate", SAMPLE_RATE])
-            writer.writerow(["Sample Number", "Amplitude"])
-
-            for i in range(len(data)):
+            writer.writerow(["Sample Rate", SAMPLE_RATE]) # write sample rate to the file in first line
+            writer.writerow(["Sample Number", "Amplitude"]) # header for rest of data
+            for i in range(len(data)): # write the sample number and its amplitude (integer value of the binary data)
                 sample = data[i]
                 writer.writerow([i, sample])
 
@@ -158,30 +166,51 @@ def outmodes(raw_data):
 
     print("Outputted Selected File")
 
-
-# Get Recording Mode
 # =========================
-print("Chose:\nManual Recording Mode (M)\nDistance Trigger Mode (D)")
-usr_selection = ""
-while(True):
-    usr_selection = input("Enter Recording Mode: ").upper()
-    if usr_selection=="M" or usr_selection=="D" :
-        break
+# Run the program, getting user input and chosing recording function appropriately
+def run():
+    # get user selection of recording mode
+    # keep promptin untill correct choice entered
+    print("Chose:\nManual Recording Mode (M)\nDistance Trigger Mode (D)")
+    usr_selection = ""
+    while(True):
+        usr_selection = input("Enter Recording Mode: ").upper()
+        if usr_selection=="M" or usr_selection=="D" :
+            break
 
-seconds = 0
-distance = 0
-if usr_selection=="M":
-    seconds = int(input("Enter number of seconds: "))
-    print(f"User Selected: {usr_selection} with {seconds}s")
-elif usr_selection=="D":
-    distance = int(input("Enter Distance: "))
-    print(f"User Selected: {usr_selection} with {distance}cm")
+    # get the number of seconds or distance the user wants
+    # keep prompting until acceptable number entered
+    seconds = 0
+    distance = 0
+    if usr_selection=="M":
+        while True:
+            try:
+                seconds = int(input("Enter number of seconds: "))
+                print(f"User Selected: {usr_selection} with {seconds}s")
+                break
+            except ValueError:
+                print("Enter a number")
+        
+    elif usr_selection=="D":
+        while True:
+            try:
+                distance = int(input("Enter Distance: "))
+                print(f"User Selected: {usr_selection} with {distance}cm")
+                if distance<5:
+                    raise ValueError()
+                break
+            except ValueError:
+                print("Enter a number")
 
-input("run?")
+    input("Press Enter to Run")
 
 
-if usr_selection=="M":
-    record_manual(seconds)
-elif usr_selection=="D":
-    record_distance_trigger(distance=distance)
+    if usr_selection=="M":
+        record_manual(seconds)
+    elif usr_selection=="D":
+        record_distance_trigger(distance=distance)
 
+
+# main to run the program
+while True:
+    run()

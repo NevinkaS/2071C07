@@ -47,7 +47,7 @@ TIM_HandleTypeDef htim1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
+// Sampling STM
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -75,10 +75,9 @@ static void SPI1_WriteByte(uint8_t tx_byte){
 //code for getting data from the AUX through ADC
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc){
 //	HAL_GPIO_WritePin(hi_GPIO_Port, hi_Pin, 1);
-	uint16_t sampledValue = HAL_ADC_GetValue(&hadc1);
+	uint16_t sampledValue = HAL_ADC_GetValue(&hadc1); // sample value from aux through ADC
 //	HAL_GPIO_WritePin(hi_GPIO_Port, hi_Pin, 0);
-	SPI1_WriteByte(sampledValue);
-//	HAL_UART_Transmit(&huart2, &sampledValue, 1, HAL_MAX_DELAY);
+	SPI1_WriteByte(sampledValue); // send value over spi
 }
 
 /* USER CODE END 0 */

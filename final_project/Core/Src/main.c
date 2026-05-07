@@ -52,6 +52,7 @@ UART_HandleTypeDef huart2;
 DMA_HandleTypeDef hdma_usart2_tx;
 
 /* USER CODE BEGIN PV */
+// Processing STM
 uint16_t previous_sample = 0;
 uint16_t first_sample = 1;
 uint16_t current_sample = 0;
@@ -82,70 +83,56 @@ static void MX_TIM7_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint16_t moving_average_filter(uint16_t current_sample)
-{
-
-    if (first_sample)
-    {
+// moving average filter of length 2 with outlier removal
+uint16_t moving_average_filter(uint16_t current_sample){
+    if (first_sample){
         avg = current_sample;
         first_sample = 0;
-    }
-    else
-    {
-    	//filter out outliers and replace with previous sample
+    } else {
+//		//filter out outliers and replace with previous sample
 //    	uint16_t upper = previous_sample*1.25;
 //    	uint16_t lower = previous_sample*0.75;
 //    	if((current_sample<lower) || (current_sample>upper)){
 //    		current_sample = previous_sample;
 //    	}
-    	//find average
+
+    	// find average
         avg = (previous_sample + current_sample) / 2;
     }
-
     previous_sample = current_sample;
-
     return avg;
 }
 
+// function to get cm value from ultrasonic sensor
 int ultraRead(){
-
+	// pulse the trigger for 10us
 	__HAL_TIM_SET_COUNTER(&htim16, 0);
 	HAL_GPIO_WritePin(trig_GPIO_Port, trig_Pin, 1);
 	while(__HAL_TIM_GET_COUNTER(&htim16) <= 10){;}
 	HAL_GPIO_WritePin(trig_GPIO_Port, trig_Pin, 0);
 
-	// TIMEOUT VARIABLES (Safety Net)
+	// timeout variables
 	uint32_t timeout_counter = 0;
-	const uint32_t MAX_TIMEOUT = 60000;
+	const uint32_t MAX_TIMEOUT_START = 4000; // 4ms max wait for sensor to react
+	const uint32_t MAX_TIMEOUT_RETURN = 25000; // 25ms is the maximum distance the HCSR04 can detect
 
-	// 1. Wait for Echo to go HIGH (with timeout)
+	// wait for Echo to go HIGH
 	while(HAL_GPIO_ReadPin(echo_GPIO_Port,echo_Pin)==0){
 		timeout_counter++;
-		if (timeout_counter > MAX_TIMEOUT) {
-			return 999; // Return fake distance to indicate error
-		}
+		if (timeout_counter > MAX_TIMEOUT_START) {return 999;} // fake distance as error
 	}
 
-	__HAL_TIM_SET_COUNTER(&htim16, 0);
+	__HAL_TIM_SET_COUNTER(&htim16, 0); // reset counter to 0 once echo is high
 
-	// 2. Wait for Echo to go LOW (with timeout)
+	// wait for Echo to go LOW (stays high while sound waves travel back)
 	while(HAL_GPIO_ReadPin(echo_GPIO_Port,echo_Pin)==1){
-		if (__HAL_TIM_GET_COUNTER(&htim16) > 38000) { // 38ms is max sensor range
-			return 999; // Return fake distance to indicate error
-		}
+		if (__HAL_TIM_GET_COUNTER(&htim16) > MAX_TIMEOUT_RETURN) {return 999;} // fake distance as error
 	}
 
+	// get time for the soundwave to return
 	int time = __HAL_TIM_GET_COUNTER(&htim16);
 	int cm = time * 0.01715;
-
-//		  if(cm<10){
-//			  HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 1);
-//			  HAL_Delay(50);
-//		  } else {
-//			  HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 0);
-//			  HAL_Delay(50);
-//		  }
-	  return cm;
+	return cm;
 }
 
 /* USER CODE END 0 */
@@ -191,7 +178,6 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  uint16_t sample_value = 0;
   uint32_t last_ping_time = 0;
   HAL_TIM_Base_Start(&htim7);
   HAL_TIM_Base_Start(&htim16);
@@ -209,18 +195,16 @@ int main(void)
 	  		  uint8_t high = rx_byte[1] * 1.2;
 	  		  uint8_t low  = rx_byte[1] * 0.8;
 
-	  		  // 1. Check distance ONLY every 60 milliseconds
-	  		  if (HAL_GetTick() - last_ping_time > 250) {
+	  		  // check distance every 5 milliseconds
+	  		  if (HAL_GetTick() - last_ping_time > 5) {
 	  			  last_ping_time = HAL_GetTick(); // Reset the clock
+	  			  int current_dist = ultraRead(); //get distance
 
-	  			  int current_dist = ultraRead();
 	  			  if (current_dist < low && read==0) {
-	  				  read = 1; // Hand is close, START recording!
-
+	  				  read = 1; // object close, start recording
 	  				  HAL_SPI_Receive_DMA(&hspi1, spi_rx_buffer, 200);
 	  			  } else if (current_dist > high && read==1) {
-	  				  read = 0; // Hand left, STOP recording!
-
+	  				  read = 0; // object left, stop recording!
 	  				  HAL_SPI_DMAStop(&hspi1);
 	  			  }
 	  		  }
@@ -570,55 +554,55 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
+	// message from laptop accepted by an interupt
 	if (huart->Instance == USART2){
 		if(rx_byte[0]=='M'){
+			// if mode is M (Manual) then manual true and make sure distance false
 			manual = true;
 			distance = false;
-			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 1);
+			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 1); // turn on debug to see it is working
+			// since Manual we can straight away activate the DMA
+
 			HAL_SPI_Receive_DMA(&hspi1, spi_rx_buffer, 200);
 		} else if (rx_byte[0]=='D'){
+			// if mode is D (Distance) the distance true make sure manual is false
 			manual = false;
 			distance = true;
-			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 1);
+			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 1); // turn on debug to see it is working
+			// cant turn on dma straight away as we need to check for distance
+
 		} else if (rx_byte[0]=='O'){
+			// if mode is O (OFF) the make sure manual and distance false and make sure dma is stopped
 			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 0);
 			manual = false;
 			distance = false;
-
 			HAL_SPI_DMAStop(&hspi1);
 		}
 	}
-
+	// restart interupt to detect new messages
 	HAL_UART_Receive_IT(&huart2, rx_byte, 2);
 }
 
-// TRIGGER 1: DMA is halfway done (bytes 0 to 99 are ready)
+// TRIGGER 1: dma is halfway done (bytes 0 to 99 are ready)
 void HAL_SPI_RxHalfCpltCallback(SPI_HandleTypeDef *hspi) {
     if (hspi->Instance == SPI1) {
-    	HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
-
-        // Filter the FIRST half of the RX buffer
+        // filter the first half of the RX buffer
         for(int i = 0; i < 100; i++) {
             uart_tx_buffer_half1[i] = (uint8_t)moving_average_filter((uint16_t)spi_rx_buffer[i]);
         }
-
-        // Send the filtered half to the PC
+        // send the filtered data to laptop
         HAL_UART_Transmit_DMA(&huart2, uart_tx_buffer_half1, 100);
     }
 }
 
-// TRIGGER 2: DMA is fully done (bytes 100 to 199 are ready)
+// TRIGGER 2: dma is fully done (bytes 100 to 199 are ready)
 void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi) {
     if (hspi->Instance == SPI1) {
-
-    	HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
-
-        // Filter the SECOND half of the RX buffer
+        // filter the second half of the RX buffer
         for(int i = 0; i < 100; i++) {
             uart_tx_buffer_half2[i] = (uint8_t)moving_average_filter((uint16_t)spi_rx_buffer[i + 100]);
         }
-
-        // Send the second filtered half to the PC
+        // send the filtered data to laptop
         HAL_UART_Transmit_DMA(&huart2, uart_tx_buffer_half2, 100);
     }
 }
