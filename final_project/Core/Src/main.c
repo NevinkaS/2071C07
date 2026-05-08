@@ -194,9 +194,10 @@ int main(void)
 	  else if (distance) {
 	  		  uint8_t high = rx_byte[1] * 1.2;
 	  		  uint8_t low  = rx_byte[1] * 0.8;
+	  		  static int missing_count = 0;
 
-	  		  // check distance every 5 milliseconds
-	  		  if (HAL_GetTick() - last_ping_time > 5) {
+	  		  // check distance every 50 milliseconds
+	  		  if (HAL_GetTick() - last_ping_time > 50) {
 	  			  last_ping_time = HAL_GetTick(); // Reset the clock
 	  			  int current_dist = ultraRead(); //get distance
 
@@ -204,9 +205,16 @@ int main(void)
 	  				  read = 1; // object close, start recording
 	  				  HAL_SPI_Receive_DMA(&hspi1, spi_rx_buffer, 2400);
 	  			  } else if (current_dist > high && read==1) {
-	  				  read = 0; // object left, stop recording!
-	  				  HAL_SPI_DMAStop(&hspi1);
-	  			  }
+	  				  missing_count++; // Hand appears to be gone
+					  // Only stop if the hand has been gone for 5 consecutive pings (250ms)
+					  if (missing_count >= 5) {
+						  read = 0;
+						  HAL_SPI_DMAStop(&hspi1);
+					  }
+				  } else if (current_dist < high) {
+					  // Hand is still here, reset the error counter
+					  missing_count = 0;
+				  }
 	  		  }
 
 //	  		  // 2. If triggered, sample audio as fast as possible!

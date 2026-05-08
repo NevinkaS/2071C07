@@ -42,3 +42,41 @@ Finished building: default.size.stdout
  
 Finished building: Project.list
  
+16:20:03 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "final_project.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nevin\Desktop\pro\2071C07\final_project\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="final_project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: final_project.elf
+ 
+arm-none-eabi-size  final_project.elf 
+arm-none-eabi-objdump -h -S final_project.elf  > "final_project.list"
+   text	   data	    bss	    dec	    hex	filename
+  27756	     16	   7016	  34788	   87e4	final_project.elf
+Finished building: default.size.stdout
+ 
+Finished building: final_project.list
+ 
+16:34:24 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:207:43: error: 'missing_count' undeclared (first use in this function)
+  207 |                                           missing_count++; // Hand appears to be gone
+      |                                           ^~~~~~~~~~~~~
+../Core/Src/main.c:207:43: note: each undeclared identifier is reported only once for each function it appears in
+make: *** [Core/Src/subdir.mk:34: Core/Src/main.o] Error 1
+"make -j8 all" terminated with exit code 2. Build might be incomplete.
+16:34:41 **** Incremental Build of configuration Debug for project final_project ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "final_project.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nevin\Desktop\pro\2071C07\final_project\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="final_project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: final_project.elf
+ 
+arm-none-eabi-size  final_project.elf 
+arm-none-eabi-objdump -h -S final_project.elf  > "final_project.list"
+   text	   data	    bss	    dec	    hex	filename
+  27800	     16	   7016	  34832	   8810	final_project.elf
+Finished building: default.size.stdout
+ 
+Finished building: final_project.list
+ 
