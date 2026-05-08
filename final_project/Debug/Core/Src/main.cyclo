@@ -11,5 +11,5 @@
 ../Core/Src/main.c:521:13:MX_GPIO_Init	1
 ../Core/Src/main.c:565:6:HAL_UART_RxCpltCallback	5
 ../Core/Src/main.c:596:6:HAL_SPI_RxHalfCpltCallback	3
-../Core/Src/main.c:621:6:HAL_SPI_RxCpltCallback	3
-../Core/Src/main.c:651:6:Error_Handler	1
+../Core/Src/main.c:629:6:HAL_SPI_RxCpltCallback	3
+../Core/Src/main.c:667:6:Error_Handler	1

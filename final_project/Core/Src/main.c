@@ -604,6 +604,14 @@ void HAL_SPI_RxHalfCpltCallback(SPI_HandleTypeDef *hspi) {
 //    }
     if (hspi->Instance == SPI1) {
         int out_idx = 0;
+
+        // Skip spi_rx_buffer[0] — first sample is always corrupt
+        // Fill its slot with the previous valid value to avoid a gap
+        uint16_t filler = moving_average_filter(spi_rx_buffer[1]); // use [1] twice
+        uart_tx_buffer_half1[out_idx++] = (filler >> 4) & 0xFF;
+        uart_tx_buffer_half1[out_idx++] = ((filler & 0x0F) << 4) | ((filler >> 8) & 0x0F);
+        uart_tx_buffer_half1[out_idx++] = filler & 0xFF;
+
         for(int i = 0; i < 1200; i += 2) {
             uint16_t s1 = moving_average_filter(spi_rx_buffer[i]);
             uint16_t s2 = moving_average_filter(spi_rx_buffer[i + 1]);
@@ -629,6 +637,14 @@ void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi) {
 //    }
     if (hspi->Instance == SPI1) {
         int out_idx = 0;
+
+        // Skip spi_rx_buffer[0] — first sample is always corrupt
+        // Fill its slot with the previous valid value to avoid a gap
+        uint16_t filler = moving_average_filter(spi_rx_buffer[1]); // use [1] twice
+        uart_tx_buffer_half1[out_idx++] = (filler >> 4) & 0xFF;
+        uart_tx_buffer_half1[out_idx++] = ((filler & 0x0F) << 4) | ((filler >> 8) & 0x0F);
+        uart_tx_buffer_half1[out_idx++] = filler & 0xFF;
+
         for(int i = 0; i < 1200; i += 2) {
             // REMEMBER the +1200 offset for the second half!
             uint16_t s1 = moving_average_filter(spi_rx_buffer[i + 1200]);
