@@ -4,6 +4,7 @@ import serial
 import serial.tools.list_ports
 import matplotlib.pyplot as plt
 import csv
+import time
 
 # # poll serial devices
 # devices = serial.tools.list_ports.comports()
@@ -25,6 +26,8 @@ def record_manual(duration_seconds):
     print(f"\nOpening {SERIAL_PORT} at {BAUD_RATE} baud...")
     ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=0.1)
     ser.reset_input_buffer()
+    ser.write('O'.encode())
+    ser.write('O'.encode())
     ser.write('M'.encode())
     ser.write(duration_seconds.to_bytes(1, byteorder='little'))
 
@@ -33,7 +36,7 @@ def record_manual(duration_seconds):
     print("Recording started...")
     samples = []
     while len(samples) < num_samples*1.5: # every sample is 1.5 bytes
-        bytes = ser.read(size=1800)
+        bytes = ser.read(size=3600)
         if bytes:
             samples.extend(bytes)
 
@@ -42,8 +45,11 @@ def record_manual(duration_seconds):
     # end the sending of samples and disconnect
     ser.write('O'.encode())
     ser.write('O'.encode())
+    ser.flush()          # Force Python to push the bytes out of the PC buffer
+    time.sleep(0.1)
     print("Recording ended.")
     print(f"Received {int(len(samples)/1.5)} samples.")
+    time.sleep(0.01)
     ser.close()
 
     # call outmodes() to select the output mode
@@ -102,11 +108,15 @@ def record_distance_trigger(distance):
             # end the sending of samples and disconnect
             ser.write('O'.encode())
             ser.write('O'.encode())
+            ser.write('O'.encode())
+            ser.write('O'.encode())
             ser.close()
             print(f"Received {int(len(samples)/1.5)} samples.")
             break
 
         # end the sending of samples and disconnect
+        ser.write('O'.encode())
+        ser.write('O'.encode())
         ser.write('O'.encode())
         ser.write('O'.encode())
         ser.close()
@@ -139,6 +149,7 @@ def outmodes(raw_data):
         
     data = np.array(unpacked_data, dtype=np.float32) # so it isnt rounded to integer
     # 2. Map 12-bit ADC range (0 to 4095) to 16-bit WAV range (-32768 to 32767)
+    # data = (data - data.min()) / (data.max() - data.min())
     data = (data / 4095.0) # divide down to 0-1
     data = data * 65535.0  # multiply up to 16 bit
     data = data - 32768.0 # wav 16 bit takes signed so shift by half
