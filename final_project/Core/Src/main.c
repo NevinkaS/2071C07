@@ -63,9 +63,9 @@ uint8_t cmDist = 0;
 bool manual = false;
 bool distance = false;
 int read = 0;
-uint8_t spi_rx_buffer[200];           // Circular buffer for incoming mic data
-uint8_t uart_tx_buffer_half1[100];    // Outgoing buffer for the first half
-uint8_t uart_tx_buffer_half2[100];    // Outgoing buffer for the second half
+uint8_t spi_rx_buffer[2400];           // Circular buffer for incoming mic data
+uint8_t uart_tx_buffer_half1[1200];    // Outgoing buffer for the first half
+uint8_t uart_tx_buffer_half2[1200];    // Outgoing buffer for the second half
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -202,7 +202,7 @@ int main(void)
 
 	  			  if (current_dist < low && read==0) {
 	  				  read = 1; // object close, start recording
-	  				  HAL_SPI_Receive_DMA(&hspi1, spi_rx_buffer, 200);
+	  				  HAL_SPI_Receive_DMA(&hspi1, spi_rx_buffer, 2400);
 	  			  } else if (current_dist > high && read==1) {
 	  				  read = 0; // object left, stop recording!
 	  				  HAL_SPI_DMAStop(&hspi1);
@@ -563,7 +563,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 1); // turn on debug to see it is working
 			// since Manual we can straight away activate the DMA
 
-			HAL_SPI_Receive_DMA(&hspi1, spi_rx_buffer, 200);
+			HAL_SPI_Receive_DMA(&hspi1, spi_rx_buffer, 2400);
 		} else if (rx_byte[0]=='D'){
 			// if mode is D (Distance) the distance true make sure manual is false
 			manual = false;
@@ -587,11 +587,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 void HAL_SPI_RxHalfCpltCallback(SPI_HandleTypeDef *hspi) {
     if (hspi->Instance == SPI1) {
         // filter the first half of the RX buffer
-        for(int i = 0; i < 100; i++) {
+        for(int i = 0; i < 1200; i++) {
             uart_tx_buffer_half1[i] = (uint8_t)moving_average_filter((uint16_t)spi_rx_buffer[i]);
         }
         // send the filtered data to laptop
-        HAL_UART_Transmit_DMA(&huart2, uart_tx_buffer_half1, 100);
+        HAL_UART_Transmit_DMA(&huart2, uart_tx_buffer_half1, 1200);
     }
 }
 
@@ -599,11 +599,11 @@ void HAL_SPI_RxHalfCpltCallback(SPI_HandleTypeDef *hspi) {
 void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi) {
     if (hspi->Instance == SPI1) {
         // filter the second half of the RX buffer
-        for(int i = 0; i < 100; i++) {
-            uart_tx_buffer_half2[i] = (uint8_t)moving_average_filter((uint16_t)spi_rx_buffer[i + 100]);
+        for(int i = 0; i < 1200; i++) {
+            uart_tx_buffer_half2[i] = (uint8_t)moving_average_filter((uint16_t)spi_rx_buffer[i + 1200]);
         }
         // send the filtered data to laptop
-        HAL_UART_Transmit_DMA(&huart2, uart_tx_buffer_half2, 100);
+        HAL_UART_Transmit_DMA(&huart2, uart_tx_buffer_half2, 1200);
     }
 }
 

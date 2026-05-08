@@ -13,7 +13,7 @@ import csv
 # Magic Values
 SERIAL_PORT = "COM10"
 BAUD_RATE = 921600
-SAMPLE_RATE = 8265
+SAMPLE_RATE = 48048 # 32,000,000/(6*111) prescaler 5 period 110
 
 # Recording functions
 # =========================
@@ -23,7 +23,7 @@ def record_manual(duration_seconds):
 
     # connect to STM and start sending samples in the selected mode's method
     print(f"\nOpening {SERIAL_PORT} at {BAUD_RATE} baud...")
-    ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
+    ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=0.1)
     ser.write('M'.encode())
     ser.write(duration_seconds.to_bytes(1, byteorder='little'))
 
@@ -31,14 +31,12 @@ def record_manual(duration_seconds):
     # record the sent samples
     print("Recording started...")
     samples = []
-    i=0
-    while i*100 < num_samples:
-        bytes = ser.read(size=100)
+    while len(samples) < num_samples:
+        bytes = ser.read(size=1200)
         if bytes:
             samples.extend(bytes)
-        i+=1
 
-    # since samples are gotten in chunks of 100, cut down to required amount
+    # since samples are gotten in chunks of 1200, then cut down to required amount
     samples = samples[:num_samples]
     # end the sending of samples and disconnect
     ser.write('O'.encode())
@@ -82,7 +80,7 @@ def record_distance_trigger(distance):
             # read incoming audio samples, saving the amount of empty reads (timeouts)
             empty_reads = 0
             while True:
-                data = ser.read(size=100)
+                data = ser.read(size=1200)
                 if data:
                     samples.extend(data)
                     empty_reads = 0
