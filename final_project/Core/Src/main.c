@@ -63,9 +63,10 @@ uint8_t cmDist = 0;
 bool manual = false;
 bool distance = false;
 int read = 0;
-uint8_t spi_rx_buffer[2400];           // Circular buffer for incoming mic data
-uint8_t uart_tx_buffer_half1[1200];    // Outgoing buffer for the first half
-uint8_t uart_tx_buffer_half2[1200];    // Outgoing buffer for the second half
+uint16_t spi_rx_buffer[2400];           // Circular buffer for incoming mic data
+// 12 -> 8 is 1.5x 2400x1.5=3600
+uint8_t uart_tx_buffer_half1[1800];    // Outgoing buffer for the first half
+uint8_t uart_tx_buffer_half2[1800];    // Outgoing buffer for the second half
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -208,8 +209,8 @@ int main(void)
 	  				  missing_count++; // Hand appears to be gone
 					  // Only stop if the hand has been gone for 5 consecutive pings (250ms)
 					  if (missing_count >= 5) {
-						  read = 0;
 						  HAL_SPI_DMAStop(&hspi1);
+						  read = 0;
 					  }
 				  } else if (current_dist < high) {
 					  // Hand is still here, reset the error counter
@@ -368,7 +369,7 @@ static void MX_SPI1_Init(void)
   hspi1.Instance = SPI1;
   hspi1.Init.Mode = SPI_MODE_SLAVE;
   hspi1.Init.Direction = SPI_DIRECTION_2LINES_RXONLY;
-  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi1.Init.DataSize = SPI_DATASIZE_16BIT;
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
@@ -581,10 +582,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 
 		} else if (rx_byte[0]=='O'){
 			// if mode is O (OFF) the make sure manual and distance false and make sure dma is stopped
+			HAL_SPI_DMAStop(&hspi1);
 			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 0);
 			manual = false;
 			distance = false;
-			HAL_SPI_DMAStop(&hspi1);
 		}
 	}
 	// restart interupt to detect new messages
@@ -593,25 +594,51 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 
 // TRIGGER 1: dma is halfway done (bytes 0 to 99 are ready)
 void HAL_SPI_RxHalfCpltCallback(SPI_HandleTypeDef *hspi) {
+//    if (hspi->Instance == SPI1) {
+//        // filter the first half of the RX buffer
+//        for(int i = 0; i < 1200; i++) {
+//            uart_tx_buffer_half1[i] = (uint8_t)moving_average_filter((uint16_t)spi_rx_buffer[i]);
+//        }
+//        // send the filtered data to laptop
+//        HAL_UART_Transmit_DMA(&huart2, uart_tx_buffer_half1, 1200);
+//    }
     if (hspi->Instance == SPI1) {
-        // filter the first half of the RX buffer
-        for(int i = 0; i < 1200; i++) {
-            uart_tx_buffer_half1[i] = (uint8_t)moving_average_filter((uint16_t)spi_rx_buffer[i]);
+        int out_idx = 0;
+        for(int i = 0; i < 1200; i += 2) {
+            uint16_t s1 = moving_average_filter(spi_rx_buffer[i]);
+            uint16_t s2 = moving_average_filter(spi_rx_buffer[i + 1]);
+
+            // Pack two 12-bit samples into three 8-bit bytes
+            uart_tx_buffer_half1[out_idx++] = (s1 >> 4) & 0xFF;                         // Top 8 bits of s1
+            uart_tx_buffer_half1[out_idx++] = ((s1 & 0x0F) << 4) | ((s2 >> 8) & 0x0F);  // Bottom 4 of s1 + Top 4 of s2
+            uart_tx_buffer_half1[out_idx++] = s2 & 0xFF;                                // Bottom 8 bits of s2
         }
-        // send the filtered data to laptop
-        HAL_UART_Transmit_DMA(&huart2, uart_tx_buffer_half1, 1200);
+        HAL_UART_Transmit_DMA(&huart2, uart_tx_buffer_half1, 1800); // Change to 1800
     }
 }
 
 // TRIGGER 2: dma is fully done (bytes 100 to 199 are ready)
 void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi) {
+//    if (hspi->Instance == SPI1) {
+//        // filter the second half of the RX buffer
+//        for(int i = 0; i < 1200; i++) {
+//            uart_tx_buffer_half2[i] = (uint8_t)moving_average_filter((uint16_t)spi_rx_buffer[i + 1200]);
+//        }
+//        // send the filtered data to laptop
+//        HAL_UART_Transmit_DMA(&huart2, uart_tx_buffer_half2, 1200);
+//    }
     if (hspi->Instance == SPI1) {
-        // filter the second half of the RX buffer
-        for(int i = 0; i < 1200; i++) {
-            uart_tx_buffer_half2[i] = (uint8_t)moving_average_filter((uint16_t)spi_rx_buffer[i + 1200]);
+        int out_idx = 0;
+        for(int i = 0; i < 1200; i += 2) {
+            // REMEMBER the +1200 offset for the second half!
+            uint16_t s1 = moving_average_filter(spi_rx_buffer[i + 1200]);
+            uint16_t s2 = moving_average_filter(spi_rx_buffer[i + 1201]);
+
+            uart_tx_buffer_half2[out_idx++] = (s1 >> 4) & 0xFF;
+            uart_tx_buffer_half2[out_idx++] = ((s1 & 0x0F) << 4) | ((s2 >> 8) & 0x0F);
+            uart_tx_buffer_half2[out_idx++] = s2 & 0xFF;
         }
-        // send the filtered data to laptop
-        HAL_UART_Transmit_DMA(&huart2, uart_tx_buffer_half2, 1200);
+        HAL_UART_Transmit_DMA(&huart2, uart_tx_buffer_half2, 1800); // Change to 1800
     }
 }
 

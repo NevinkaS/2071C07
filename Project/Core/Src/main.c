@@ -65,9 +65,9 @@ static void MX_SPI1_Init(void);
 /* USER CODE BEGIN 0 */
 
 //code for sending data over spi to stm2
-static void SPI1_WriteByte(uint8_t tx_byte){
+static void SPI1_WriteWord(uint16_t tx_byte){
 	while(!LL_SPI_IsActiveFlag_TXE(SPI1)){;}
-	LL_SPI_TransmitData8(SPI1, tx_byte);
+	LL_SPI_TransmitData16(SPI1, tx_byte);
 	while(LL_SPI_IsActiveFlag_BSY(SPI1)){;}
 	LL_SPI_ClearFlag_OVR(SPI1);
 }
@@ -77,7 +77,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc){
 //	HAL_GPIO_WritePin(hi_GPIO_Port, hi_Pin, 1);
 	uint16_t sampledValue = HAL_ADC_GetValue(&hadc1); // sample value from aux through ADC
 //	HAL_GPIO_WritePin(hi_GPIO_Port, hi_Pin, 0);
-	SPI1_WriteByte(sampledValue); // send value over spi
+	SPI1_WriteWord(sampledValue); // send value over spi
 }
 
 /* USER CODE END 0 */
@@ -215,7 +215,7 @@ static void MX_ADC1_Init(void)
   */
   hadc1.Instance = ADC1;
   hadc1.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
-  hadc1.Init.Resolution = ADC_RESOLUTION_8B;
+  hadc1.Init.Resolution = ADC_RESOLUTION_12B;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
   hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
@@ -289,7 +289,7 @@ static void MX_SPI1_Init(void)
   /* SPI1 parameter configuration*/
   SPI_InitStruct.TransferDirection = LL_SPI_FULL_DUPLEX;
   SPI_InitStruct.Mode = LL_SPI_MODE_MASTER;
-  SPI_InitStruct.DataWidth = LL_SPI_DATAWIDTH_8BIT;
+  SPI_InitStruct.DataWidth = LL_SPI_DATAWIDTH_16BIT;
   SPI_InitStruct.ClockPolarity = LL_SPI_POLARITY_LOW;
   SPI_InitStruct.ClockPhase = LL_SPI_PHASE_1EDGE;
   SPI_InitStruct.NSS = LL_SPI_NSS_SOFT;

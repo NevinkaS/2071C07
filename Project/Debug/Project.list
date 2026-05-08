@@ -27,9 +27,9 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  0000700c  2**0
                   CONTENTS, READONLY
- 12 .debug_info   00015215  00000000  00000000  0000703c  2**0
+ 12 .debug_info   00015210  00000000  00000000  0000703c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00002a26  00000000  00000000  0001c251  2**0
+ 13 .debug_abbrev 00002a26  00000000  00000000  0001c24c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  14 .debug_aranges 00001380  00000000  00000000  0001ec78  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
@@ -39,9 +39,9 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  17 .debug_line   000152d6  00000000  00000000  00044992  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000e1b2e  00000000  00000000  00059c68  2**0
+ 18 .debug_str    000e1b2f  00000000  00000000  00059c68  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  0013b796  2**0
+ 19 .comment      00000043  00000000  00000000  0013b797  2**0
                   CONTENTS, READONLY
  20 .debug_frame  00005394  00000000  00000000  0013b7dc  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
@@ -529,30 +529,30 @@ __STATIC_INLINE void LL_SPI_ClearFlag_OVR(const SPI_TypeDef *SPIx)
  80005c8:	f85d 7b04 	ldr.w	r7, [sp], #4
  80005cc:	4770      	bx	lr
 
-080005ce <LL_SPI_TransmitData8>:
+080005ce <LL_SPI_TransmitData16>:
   * @param  SPIx SPI Instance
-  * @param  TxData Value between Min_Data=0x00 and Max_Data=0xFF
+  * @param  TxData Value between Min_Data=0x00 and Max_Data=0xFFFF
   * @retval None
   */
-__STATIC_INLINE void LL_SPI_TransmitData8(SPI_TypeDef *SPIx, uint8_t TxData)
+__STATIC_INLINE void LL_SPI_TransmitData16(SPI_TypeDef *SPIx, uint16_t TxData)
 {
  80005ce:	b480      	push	{r7}
  80005d0:	b085      	sub	sp, #20
  80005d2:	af00      	add	r7, sp, #0
  80005d4:	6078      	str	r0, [r7, #4]
  80005d6:	460b      	mov	r3, r1
- 80005d8:	70fb      	strb	r3, [r7, #3]
+ 80005d8:	807b      	strh	r3, [r7, #2]
 #if defined (__GNUC__)
-  __IO uint8_t *spidr = ((__IO uint8_t *)&SPIx->DR);
+  __IO uint16_t *spidr = ((__IO uint16_t *)&SPIx->DR);
  80005da:	687b      	ldr	r3, [r7, #4]
  80005dc:	330c      	adds	r3, #12
  80005de:	60fb      	str	r3, [r7, #12]
   *spidr = TxData;
  80005e0:	68fb      	ldr	r3, [r7, #12]
- 80005e2:	78fa      	ldrb	r2, [r7, #3]
- 80005e4:	701a      	strb	r2, [r3, #0]
+ 80005e2:	887a      	ldrh	r2, [r7, #2]
+ 80005e4:	801a      	strh	r2, [r3, #0]
 #else
-  *((__IO uint8_t *)&SPIx->DR) = TxData;
+  SPIx->DR = TxData;
 #endif /* __GNUC__ */
 }
  80005e6:	bf00      	nop
@@ -634,39 +634,39 @@ __STATIC_INLINE void LL_APB2_GRP1_EnableClock(uint32_t Periphs)
  800064e:	4770      	bx	lr
  8000650:	40021000 	.word	0x40021000
 
-08000654 <SPI1_WriteByte>:
+08000654 <SPI1_WriteWord>:
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
 //code for sending data over spi to stm2
-static void SPI1_WriteByte(uint8_t tx_byte){
+static void SPI1_WriteWord(uint16_t tx_byte){
  8000654:	b580      	push	{r7, lr}
  8000656:	b082      	sub	sp, #8
  8000658:	af00      	add	r7, sp, #0
  800065a:	4603      	mov	r3, r0
- 800065c:	71fb      	strb	r3, [r7, #7]
+ 800065c:	80fb      	strh	r3, [r7, #6]
 	while(!LL_SPI_IsActiveFlag_TXE(SPI1)){;}
  800065e:	bf00      	nop
- 8000660:	480c      	ldr	r0, [pc, #48]	@ (8000694 <SPI1_WriteByte+0x40>)
+ 8000660:	480c      	ldr	r0, [pc, #48]	@ (8000694 <SPI1_WriteWord+0x40>)
  8000662:	f7ff ff7c 	bl	800055e <LL_SPI_IsActiveFlag_TXE>
  8000666:	4603      	mov	r3, r0
  8000668:	2b00      	cmp	r3, #0
- 800066a:	d0f9      	beq.n	8000660 <SPI1_WriteByte+0xc>
-	LL_SPI_TransmitData8(SPI1, tx_byte);
- 800066c:	79fb      	ldrb	r3, [r7, #7]
+ 800066a:	d0f9      	beq.n	8000660 <SPI1_WriteWord+0xc>
+	LL_SPI_TransmitData16(SPI1, tx_byte);
+ 800066c:	88fb      	ldrh	r3, [r7, #6]
  800066e:	4619      	mov	r1, r3
- 8000670:	4808      	ldr	r0, [pc, #32]	@ (8000694 <SPI1_WriteByte+0x40>)
- 8000672:	f7ff ffac 	bl	80005ce <LL_SPI_TransmitData8>
+ 8000670:	4808      	ldr	r0, [pc, #32]	@ (8000694 <SPI1_WriteWord+0x40>)
+ 8000672:	f7ff ffac 	bl	80005ce <LL_SPI_TransmitData16>
 	while(LL_SPI_IsActiveFlag_BSY(SPI1)){;}
  8000676:	bf00      	nop
- 8000678:	4806      	ldr	r0, [pc, #24]	@ (8000694 <SPI1_WriteByte+0x40>)
+ 8000678:	4806      	ldr	r0, [pc, #24]	@ (8000694 <SPI1_WriteWord+0x40>)
  800067a:	f7ff ff83 	bl	8000584 <LL_SPI_IsActiveFlag_BSY>
  800067e:	4603      	mov	r3, r0
  8000680:	2b00      	cmp	r3, #0
- 8000682:	d1f9      	bne.n	8000678 <SPI1_WriteByte+0x24>
+ 8000682:	d1f9      	bne.n	8000678 <SPI1_WriteWord+0x24>
 	LL_SPI_ClearFlag_OVR(SPI1);
- 8000684:	4803      	ldr	r0, [pc, #12]	@ (8000694 <SPI1_WriteByte+0x40>)
+ 8000684:	4803      	ldr	r0, [pc, #12]	@ (8000694 <SPI1_WriteWord+0x40>)
  8000686:	f7ff ff90 	bl	80005aa <LL_SPI_ClearFlag_OVR>
 }
  800068a:	bf00      	nop
@@ -691,16 +691,16 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc){
  80006a6:	4603      	mov	r3, r0
  80006a8:	81fb      	strh	r3, [r7, #14]
 //	HAL_GPIO_WritePin(hi_GPIO_Port, hi_Pin, 0);
-	SPI1_WriteByte(sampledValue); // send value over spi
+	SPI1_WriteWord(sampledValue); // send value over spi
  80006aa:	89fb      	ldrh	r3, [r7, #14]
- 80006ac:	b2db      	uxtb	r3, r3
- 80006ae:	4618      	mov	r0, r3
- 80006b0:	f7ff ffd0 	bl	8000654 <SPI1_WriteByte>
+ 80006ac:	4618      	mov	r0, r3
+ 80006ae:	f7ff ffd1 	bl	8000654 <SPI1_WriteWord>
 }
- 80006b4:	bf00      	nop
- 80006b6:	3710      	adds	r7, #16
- 80006b8:	46bd      	mov	sp, r7
- 80006ba:	bd80      	pop	{r7, pc}
+ 80006b2:	bf00      	nop
+ 80006b4:	3710      	adds	r7, #16
+ 80006b6:	46bd      	mov	sp, r7
+ 80006b8:	bd80      	pop	{r7, pc}
+ 80006ba:	bf00      	nop
  80006bc:	20000028 	.word	0x20000028
 
 080006c0 <main>:
@@ -943,9 +943,9 @@ static void MX_ADC1_Init(void)
  80007e4:	4b28      	ldr	r3, [pc, #160]	@ (8000888 <MX_ADC1_Init+0xc0>)
  80007e6:	2200      	movs	r2, #0
  80007e8:	605a      	str	r2, [r3, #4]
-  hadc1.Init.Resolution = ADC_RESOLUTION_8B;
+  hadc1.Init.Resolution = ADC_RESOLUTION_12B;
  80007ea:	4b27      	ldr	r3, [pc, #156]	@ (8000888 <MX_ADC1_Init+0xc0>)
- 80007ec:	2210      	movs	r2, #16
+ 80007ec:	2200      	movs	r2, #0
  80007ee:	609a      	str	r2, [r3, #8]
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
  80007f0:	4b25      	ldr	r3, [pc, #148]	@ (8000888 <MX_ADC1_Init+0xc0>)
@@ -1130,8 +1130,8 @@ static void MX_SPI1_Init(void)
   SPI_InitStruct.Mode = LL_SPI_MODE_MASTER;
  80008ee:	f44f 7382 	mov.w	r3, #260	@ 0x104
  80008f2:	61fb      	str	r3, [r7, #28]
-  SPI_InitStruct.DataWidth = LL_SPI_DATAWIDTH_8BIT;
- 80008f4:	f44f 63e0 	mov.w	r3, #1792	@ 0x700
+  SPI_InitStruct.DataWidth = LL_SPI_DATAWIDTH_16BIT;
+ 80008f4:	f44f 6370 	mov.w	r3, #3840	@ 0xf00
  80008f8:	623b      	str	r3, [r7, #32]
   SPI_InitStruct.ClockPolarity = LL_SPI_POLARITY_LOW;
  80008fa:	2300      	movs	r3, #0

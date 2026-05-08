@@ -24,6 +24,7 @@ def record_manual(duration_seconds):
     # connect to STM and start sending samples in the selected mode's method
     print(f"\nOpening {SERIAL_PORT} at {BAUD_RATE} baud...")
     ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=0.1)
+    ser.reset_input_buffer()
     ser.write('M'.encode())
     ser.write(duration_seconds.to_bytes(1, byteorder='little'))
 
@@ -31,22 +32,22 @@ def record_manual(duration_seconds):
     # record the sent samples
     print("Recording started...")
     samples = []
-    while len(samples) < num_samples:
-        bytes = ser.read(size=1200)
+    while len(samples) < num_samples*1.5: # every sample is 1.5 bytes
+        bytes = ser.read(size=1800)
         if bytes:
             samples.extend(bytes)
 
-    # since samples are gotten in chunks of 1200, then cut down to required amount
-    samples = samples[:num_samples]
+    # since samples are gotten in chunks of 1800, then cut down to required amount
+    samples = samples[:int(num_samples*1.5)]
     # end the sending of samples and disconnect
     ser.write('O'.encode())
     ser.write('O'.encode())
     print("Recording ended.")
-    print(f"Received {len(samples)} samples.")
+    print(f"Received {int(len(samples)/1.5)} samples.")
     ser.close()
 
     # call outmodes() to select the output mode
-    outmodes(np.array(samples, dtype=np.uint8))
+    outmodes(samples)
 
 
 def record_distance_trigger(distance):
@@ -60,6 +61,7 @@ def record_distance_trigger(distance):
         # connect to STM and start sending samples in the selected mode's method
         print(f"\nOpening {SERIAL_PORT} at {BAUD_RATE} baud...")
         ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=0.1)
+        ser.reset_input_buffer()
         ser.write('D'.encode())
         ser.write(distance.to_bytes(1, byteorder='little'))
 
@@ -69,18 +71,18 @@ def record_distance_trigger(distance):
         print("Press Ctrl+C to stop.\n")
 
         try:
-            # wait until the first byte arrives
+            # wait until the first chunk arrives
             while True:
-                byte = ser.read(size=1)
-                if byte:
-                    samples.append(byte[0])
+                bytes = ser.read(size=1800)
+                if bytes:
+                    samples.extend(bytes)
                     print("Trigger detected. Recording...")
                     break
 
             # read incoming audio samples, saving the amount of empty reads (timeouts)
             empty_reads = 0
             while True:
-                data = ser.read(size=1200)
+                data = ser.read(size=1800)
                 if data:
                     samples.extend(data)
                     empty_reads = 0
@@ -101,7 +103,7 @@ def record_distance_trigger(distance):
             ser.write('O'.encode())
             ser.write('O'.encode())
             ser.close()
-            print(f"Received {len(samples)} samples.")
+            print(f"Received {int(len(samples)/1.5)} samples.")
             break
 
         # end the sending of samples and disconnect
@@ -109,10 +111,10 @@ def record_distance_trigger(distance):
         ser.write('O'.encode())
         ser.close()
 
-        print(f"Received {len(samples)} samples.")
-
+        print(f"Received {int(len(samples)/1.5)} samples.")
+    
         # call outmodes() to select the output mode
-        outmodes(np.array(samples, dtype=np.uint8))
+        outmodes(samples)
 
 # Output function
 # =========================
@@ -121,21 +123,42 @@ def outmodes(raw_data):
     mode = " "
     while(mode not in {"wav","png", "csv"}):
         mode = input("Enter the mode you want the data in (wav, png, csv): ")
+
+    # 1. Unpack 3-byte chunks back into two 12-bit samples
+    unpacked_data = []
+    for i in range(0, len(raw_data) - 2, 3):
+        b0 = raw_data[i]
+        b1 = raw_data[i+1]
+        b2 = raw_data[i+2]
+        
+        s1 = (b0 << 4) | (b1 >> 4)
+        s2 = ((b1 & 0x0F) << 8) | b2
+        
+        unpacked_data.append(s1)
+        unpacked_data.append(s2)
+        
+    data = np.array(unpacked_data, dtype=np.float32) # so it isnt rounded to integer
+    # 2. Map 12-bit ADC range (0 to 4095) to 16-bit WAV range (-32768 to 32767)
+    data = (data / 4095.0) # divide down to 0-1
+    data = data * 65535.0  # multiply up to 16 bit
+    data = data - 32768.0 # wav 16 bit takes signed so shift by half
+    data = np.clip(data, -32768, 32767) # removes any errored numbers that exceeded the bounds of 16 bit
+    data = data.astype(np.int16) # convert back to int (16 bit signed)
     
-    # convert list to numpy array
-    data = np.array(raw_data)
-    # normalise to 0 to 255 range:
-    # data = (data - data.min()) / data.max()
-    data = (data - data.min()) / (data.max() - data.min())
-    data = data * 255 # scale to 0-255
-    data = data.astype(np.uint8) # convert to uint8 type
+    # # convert list to numpy array
+    # data = np.array(raw_data)
+    # # normalise to 0 to 255 range:
+    # # data = (data - data.min()) / data.max()
+    # data = (data - data.min()) / (data.max() - data.min())
+    # data = data * 255 # scale to 0-255
+    # data = data.astype(np.uint8) # convert to uint8 type
 
     # .wav audio file
     if(mode=="wav"):
         filename="test.wav"
         with wave.open(filename, 'wb') as wf:
             wf.setnchannels(1) # mono audio (single channel)
-            wf.setsampwidth(1) # 8 bits (1 byte ) per sample
+            wf.setsampwidth(2) # 16 bits (2 bytes) per sample
             wf.setframerate(SAMPLE_RATE) # set the sample rate that the data was recorded at
             wf.writeframes(data.tobytes()) # write the audio data to the file
 
