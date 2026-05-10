@@ -21,7 +21,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,6 +44,7 @@ ADC_HandleTypeDef hadc1;
 SPI_HandleTypeDef hspi1;
 DMA_HandleTypeDef hdma_spi1_rx;
 
+TIM_HandleTypeDef htim6;
 TIM_HandleTypeDef htim7;
 TIM_HandleTypeDef htim16;
 
@@ -60,9 +60,12 @@ uint16_t filtered_sample = 0;
 uint16_t avg;
 uint8_t rx_byte[2] = {0,0};
 uint8_t cmDist = 0;
-bool manual = false;
-bool distance = false;
+int manual = 0;
+int distance = 0;
+int uart_rx_needs_rearm = 1;
 int read = 0;
+int timestart = 0;
+int time = 0;
 uint16_t spi_rx_buffer[4800];           // Circular buffer for incoming mic data
 // 12 -> 8 is 1.5x 4800x1.5=3600
 uint8_t uart_tx_buffer_half1[3600];    // Outgoing buffer for the first half
@@ -78,6 +81,7 @@ static void MX_SPI1_Init(void);
 static void MX_TIM16_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_TIM7_Init(void);
+static void MX_TIM6_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -90,13 +94,12 @@ uint16_t moving_average_filter(uint16_t current_sample){
         avg = current_sample;
         first_sample = 0;
     } else {
-//		//filter out outliers and replace with previous sample
-//    	uint16_t upper = previous_sample*1.25;
-//    	uint16_t lower = previous_sample*0.75;
-//    	if((current_sample<lower) || (current_sample>upper)){
-//    		current_sample = previous_sample;
-//    	}
-
+		//filter out outliers and replace with previous sample (up to double down to half)
+    	uint32_t upper = ((uint32_t)previous_sample+1)*2; //double
+    	uint32_t lower = ((uint32_t)previous_sample+1)/2; //half
+    	if((current_sample<lower) || (current_sample>upper)){
+    		current_sample = previous_sample; // if not within replace with previous sample to remove
+    	}
     	// find average
         avg = (previous_sample + current_sample) / 2;
     }
@@ -115,7 +118,7 @@ int ultraRead(){
 	// timeout variables
 	uint32_t timeout_counter = 0;
 	const uint32_t MAX_TIMEOUT_START = 4000; // 4ms max wait for sensor to react
-	const uint32_t MAX_TIMEOUT_RETURN = 25000; // 25ms is the maximum distance the HCSR04 can detect
+	const uint32_t MAX_TIMEOUT_RETURN = 4000;
 
 	// wait for Echo to go HIGH
 	while(HAL_GPIO_ReadPin(echo_GPIO_Port,echo_Pin)==0){
@@ -130,7 +133,7 @@ int ultraRead(){
 		if (__HAL_TIM_GET_COUNTER(&htim16) > MAX_TIMEOUT_RETURN) {return 999;} // fake distance as error
 	}
 
-	// get time for the soundwave to return
+	// get time for the soundwave to return calculate and return distance (cm)
 	int time = __HAL_TIM_GET_COUNTER(&htim16);
 	int cm = time * 0.01715;
 	return cm;
@@ -173,6 +176,7 @@ int main(void)
   MX_TIM16_Init();
   MX_ADC1_Init();
   MX_TIM7_Init();
+  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -181,42 +185,65 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   uint32_t last_ping_time = 0;
   HAL_TIM_Base_Start(&htim7);
+  HAL_TIM_Base_Start(&htim6);
   HAL_TIM_Base_Start(&htim16);
-  HAL_UART_Receive_IT(&huart2, rx_byte, 2);
   while (1)
-  {if (distance) {
-	  		  uint8_t high = rx_byte[1] * 1.2;
-	  		  uint8_t low  = rx_byte[1] * 0.8;
-	  		  static int missing_count = 0;
+  {
+	  	// restart the uart2 interrupt when needed
+		if (uart_rx_needs_rearm) {
+			if (HAL_UART_Receive_IT(&huart2, rx_byte, 2) == HAL_OK) {
+				uart_rx_needs_rearm = 0;
+			}
+		}
 
-	  		  // check distance every 50 milliseconds
-	  		  if (HAL_GetTick() - last_ping_time > 50) {
-	  			  last_ping_time = HAL_GetTick(); // Reset the clock
-	  			  int current_dist = ultraRead(); //get distance
+		// send data for amount of time needed
+		if (manual){
+			if (!timestart){
+				__HAL_TIM_SET_COUNTER(&htim6, 0);
+				timestart = 1;
+			} else if (__HAL_TIM_GET_COUNTER(&htim6) >= time+50) {
+				HAL_SPI_DMAStop(&hspi1);
+				timestart = 0;
+				manual = 0;
+			}
+		}
 
-	  			  if (current_dist < low && read==0) {
-	  				  read = 1; // object close, start recording
-						// --- FLUSH SPI BUFFER HERE ---
-						__HAL_SPI_CLEAR_OVRFLAG(&hspi1); // Clear overrun error
-						volatile uint32_t dummy;         // Create a trash variable
-						while (__HAL_SPI_GET_FLAG(&hspi1, SPI_FLAG_RXNE)) {
-							dummy = hspi1.Instance->DR;  // Read the data register into the trash
+		// send data when object within distance
+		if (distance) {
+			//schmitt triggering because of ultrasonic jitter
+			uint8_t high = rx_byte[1] * 1.2;
+			uint8_t low  = rx_byte[1] * 0.8;
+			static int missing_count = 0;
+
+			// check distance every 50 milliseconds
+			if (HAL_GetTick() - last_ping_time > 100) {
+				last_ping_time = HAL_GetTick(); // Reset the clock
+				int current_dist = ultraRead(); //get distance
+
+				if (current_dist < low && read==0) {
+						read = 1; // object close, start recording
+						// flush spi buffer before dma recording
+						__HAL_SPI_CLEAR_OVRFLAG(&hspi1); // clear any overrun error
+						uint32_t dummy;
+						while (__HAL_SPI_GET_FLAG(&hspi1, SPI_FLAG_RXNE)) { // while receive buffer not empty
+							dummy = hspi1.Instance->DR;  // read the spi data register into the dummy variable (not saved)
 						}
 						// start the recording
-	  				  HAL_SPI_Receive_DMA(&hspi1, spi_rx_buffer, 4800);
-	  			  } else if (current_dist > high && read==1) {
-	  				  missing_count++; // Hand appears to be gone
-					  // Only stop if the hand has been gone for 5 consecutive pings (250ms)
-					  if (missing_count >= 5) {
-						  HAL_SPI_DMAStop(&hspi1);
-						  read = 0;
-					  }
-				  } else if (current_dist < high) {
-					  // Hand is still here, reset the error counter
-					  missing_count = 0;
-				  }
-	  		  }
-	  	  }
+						HAL_SPI_Receive_DMA(&hspi1, spi_rx_buffer, 4800);
+
+				} else if (current_dist > high && read==1) {
+					// due to unreliability make sure 5 reading in a row have no object before turning off
+					missing_count++;
+					if (missing_count >= 5) {
+					  HAL_SPI_DMAStop(&hspi1);
+					  read = 0;
+					}
+				} else if (current_dist < high) {
+					// reset the counter if object has return within 5 readings
+					missing_count = 0;
+				}
+			}
+		}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -378,6 +405,44 @@ static void MX_SPI1_Init(void)
   /* USER CODE BEGIN SPI1_Init 2 */
 
   /* USER CODE END SPI1_Init 2 */
+
+}
+
+/**
+  * @brief TIM6 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM6_Init(void)
+{
+
+  /* USER CODE BEGIN TIM6_Init 0 */
+
+  /* USER CODE END TIM6_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM6_Init 1 */
+
+  /* USER CODE END TIM6_Init 1 */
+  htim6.Instance = TIM6;
+  htim6.Init.Prescaler = 31999;
+  htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim6.Init.Period = 65535;
+  htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim6, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM6_Init 2 */
+
+  /* USER CODE END TIM6_Init 2 */
 
 }
 
@@ -557,24 +622,27 @@ static void MX_GPIO_Init(void)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 	// message from laptop accepted by an interupt
 	if (huart->Instance == USART2){
-		// --- FLUSH SPI BUFFER HERE ---
-		__HAL_SPI_CLEAR_OVRFLAG(&hspi1); // Clear overrun error
-		volatile uint32_t dummy;         // Create a trash variable
-		while (__HAL_SPI_GET_FLAG(&hspi1, SPI_FLAG_RXNE)) {
-			dummy = hspi1.Instance->DR;  // Read the data register into the trash
-		}
+
 		if(rx_byte[0]=='M'){
 			// if mode is M (Manual) then manual true and make sure distance false
-			manual = true;
-			distance = false;
+			manual = 1;
+			distance = 0;
 			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 1); // turn on debug to see it is working
+			time = rx_byte[1] * 1000;
 
+			// flush spi buffer before dma recording
+			__HAL_SPI_CLEAR_OVRFLAG(&hspi1); // clear any overrun error
+			uint32_t dummy;
+			while (__HAL_SPI_GET_FLAG(&hspi1, SPI_FLAG_RXNE)) { // while spi receive buffer not empty
+				dummy = hspi1.Instance->DR;  // read the spi data register into the dummy variable (not saved)
+			}
 			// since Manual we can straight away activate the DMA
 			HAL_SPI_Receive_DMA(&hspi1, spi_rx_buffer, 4800);
+
 		} else if (rx_byte[0]=='D'){
 			// if mode is D (Distance) the distance true make sure manual is false
-			manual = false;
-			distance = true;
+			manual = 0;
+			distance = 1;
 			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 1); // turn on debug to see it is working
 			// cant turn on dma straight away as we need to check for distance
 
@@ -582,19 +650,22 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 			// if mode is O (OFF) the make sure manual and distance false and make sure dma is stopped
 			HAL_SPI_DMAStop(&hspi1);
 			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, 0);
-			manual = false;
-			distance = false;
+			manual = 0;
+			distance = 0;
+	        first_sample = 1; // make sure next recording set has a first sample for filter
+			timestart = 0; // make sure timer will start for next manual session
 		}
 	}
 	// restart interupt to detect new messages
-	HAL_UART_Receive_IT(&huart2, rx_byte, 2);
+	uart_rx_needs_rearm = 1;
 }
 
-// TRIGGER 1: dma is halfway done (bytes 0 to 99 are ready)
+// TRIGGER 1: dma is halfway done (bytes 0 to 2400 are ready)
 void HAL_SPI_RxHalfCpltCallback(SPI_HandleTypeDef *hspi) {
     if (hspi->Instance == SPI1) {
         int out_idx = 0;
         for(int i = 0; i < 2400; i += 2) {
+        	// send through filter
             uint16_t s1 = moving_average_filter(spi_rx_buffer[i]);
             uint16_t s2 = moving_average_filter(spi_rx_buffer[i + 1]);
 
@@ -607,13 +678,13 @@ void HAL_SPI_RxHalfCpltCallback(SPI_HandleTypeDef *hspi) {
     }
 }
 
-// TRIGGER 2: dma is fully done (bytes 100 to 199 are ready)
+// TRIGGER 2: dma is fully done (bytes 2400 to 4800 are ready)
 void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi) {
     if (hspi->Instance == SPI1) {
         int out_idx = 0;
 
         for(int i = 0; i < 2400; i += 2) {
-            // REMEMBER the +1200 offset for the second half!
+        	// send through filter
             uint16_t s1 = moving_average_filter(spi_rx_buffer[i + 2400]);
             uint16_t s2 = moving_average_filter(spi_rx_buffer[i + 2401]);
 

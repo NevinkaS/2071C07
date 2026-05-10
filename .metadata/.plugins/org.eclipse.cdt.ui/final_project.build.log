@@ -1,12 +1,12 @@
-21:51:04 **** Incremental Build of configuration Debug for project final_project ****
+15:31:56 **** Incremental Build of configuration Debug for project final_project ****
 make -j8 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L432xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
 ../Core/Src/main.c: In function 'main':
-../Core/Src/main.c:206:71: warning: passing argument 2 of 'HAL_SPI_Receive_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
-  206 |                                           HAL_SPI_Receive_DMA(&hspi1, spi_rx_buffer, 4800);
-      |                                                                       ^~~~~~~~~~~~~
-      |                                                                       |
-      |                                                                       uint16_t * {aka short unsigned int *}
+../Core/Src/main.c:232:77: warning: passing argument 2 of 'HAL_SPI_Receive_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+  232 |                                                 HAL_SPI_Receive_DMA(&hspi1, spi_rx_buffer, 4800);
+      |                                                                             ^~~~~~~~~~~~~
+      |                                                                             |
+      |                                                                             uint16_t * {aka short unsigned int *}
 In file included from ../Core/Inc/stm32l4xx_hal_conf.h:430,
                  from ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:29,
                  from ../Core/Inc/main.h:30,
@@ -14,32 +14,32 @@ In file included from ../Core/Inc/stm32l4xx_hal_conf.h:430,
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:805:73: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
   805 | HAL_StatusTypeDef HAL_SPI_Receive_DMA(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size);
       |                                                                ~~~~~~~~~^~~~~
-../Core/Src/main.c:201:67: warning: variable 'dummy' set but not used [-Wunused-but-set-variable]
-  201 |                                                 volatile uint32_t dummy;         // Create a trash variable
-      |                                                                   ^~~~~
+../Core/Src/main.c:226:58: warning: variable 'dummy' set but not used [-Wunused-but-set-variable]
+  226 |                                                 uint32_t dummy;         // Create a trash variable
+      |                                                          ^~~~~
 ../Core/Src/main.c: In function 'HAL_UART_RxCpltCallback':
-../Core/Src/main.c:573:53: warning: passing argument 2 of 'HAL_SPI_Receive_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
-  573 |                         HAL_SPI_Receive_DMA(&hspi1, spi_rx_buffer, 4800);
+../Core/Src/main.c:639:53: warning: passing argument 2 of 'HAL_SPI_Receive_DMA' from incompatible pointer type [-Wincompatible-pointer-types]
+  639 |                         HAL_SPI_Receive_DMA(&hspi1, spi_rx_buffer, 4800);
       |                                                     ^~~~~~~~~~~~~
       |                                                     |
       |                                                     uint16_t * {aka short unsigned int *}
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_spi.h:805:73: note: expected 'uint8_t *' {aka 'unsigned char *'} but argument is of type 'uint16_t *' {aka 'short unsigned int *'}
   805 | HAL_StatusTypeDef HAL_SPI_Receive_DMA(SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size);
       |                                                                ~~~~~~~~~^~~~~
-../Core/Src/main.c:562:35: warning: variable 'dummy' set but not used [-Wunused-but-set-variable]
-  562 |                 volatile uint32_t dummy;         // Create a trash variable
-      |                                   ^~~~~
+../Core/Src/main.c:634:34: warning: variable 'dummy' set but not used [-Wunused-but-set-variable]
+  634 |                         uint32_t dummy;
+      |                                  ^~~~~
 arm-none-eabi-gcc -o "final_project.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\nevin\Desktop\pro\2071C07\final_project\STM32L432KCUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="final_project.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: final_project.elf
  
 arm-none-eabi-size  final_project.elf 
 arm-none-eabi-objdump -h -S final_project.elf  > "final_project.list"
    text	   data	    bss	    dec	    hex	filename
-  28052	     16	  19016	  47084	   b7ec	final_project.elf
+  28412	     20	  19108	  47540	   b9b4	final_project.elf
 Finished building: default.size.stdout
  
 Finished building: final_project.list
  
 
-21:51:05 Build Finished. 0 errors, 4 warnings. (took 1s.104ms)
+15:31:57 Build Finished. 0 errors, 4 warnings. (took 1s.203ms)
 

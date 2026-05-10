@@ -121,6 +121,7 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  // start spi, adc, and timer1
   LL_SPI_Enable(SPI1);
   HAL_ADC_Start_IT(&hadc1);
   HAL_TIM_Base_Start_IT(&htim1);

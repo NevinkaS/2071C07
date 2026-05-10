@@ -25,9 +25,10 @@ def record_manual(duration_seconds):
     # connect to STM and start sending samples in the selected mode's method
     print(f"\nOpening {SERIAL_PORT} at {BAUD_RATE} baud...")
     ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=0.1)
-    ser.reset_input_buffer()
-    ser.write('O'.encode())
-    ser.write('O'.encode())
+    ser.set_buffer_size(rx_size=1000000) # set buffer size to 1MB
+    ser.reset_input_buffer() # remove stray data from buffer before recording
+    # send instructions and data to stm
+    ser.write(b'OO') 
     ser.write('M'.encode())
     ser.write(duration_seconds.to_bytes(1, byteorder='little'))
 
@@ -43,13 +44,11 @@ def record_manual(duration_seconds):
     # since samples are gotten in chunks of 1800, then cut down to required amount
     samples = samples[:int(num_samples*1.5)]
     # end the sending of samples and disconnect
-    ser.write('O'.encode())
-    ser.write('O'.encode())
-    ser.flush()          # Force Python to push the bytes out of the PC buffer
-    time.sleep(0.1)
+    time.sleep(0.1)  
+    ser.write(b'OO')
     print("Recording ended.")
-    print(f"Received {int(len(samples)/1.5)} samples.")
-    time.sleep(0.01)
+    print(f"Received {int(len(samples)/1.5)} samples.")  # we receive 1.5 bytes per sample
+    time.sleep(0.01) # wait a bit for stm to receive before closing
     ser.close()
 
     # call outmodes() to select the output mode
@@ -67,7 +66,9 @@ def record_distance_trigger(distance):
         # connect to STM and start sending samples in the selected mode's method
         print(f"\nOpening {SERIAL_PORT} at {BAUD_RATE} baud...")
         ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=0.1)
-        ser.reset_input_buffer()
+        ser.set_buffer_size(rx_size=1000000) # set buffer size to 1MB
+        ser.reset_input_buffer()  # remove stray data from buffer before recording
+        # send instructions and dat to stm
         ser.write('D'.encode())
         ser.write(distance.to_bytes(1, byteorder='little'))
 
@@ -106,22 +107,18 @@ def record_distance_trigger(distance):
         except KeyboardInterrupt:
             print("Stopped by user.")
             # end the sending of samples and disconnect
-            ser.write('O'.encode())
-            ser.write('O'.encode())
-            ser.write('O'.encode())
-            ser.write('O'.encode())
+            ser.write(b'OO')
+            time.sleep(0.01) # wait a bit for stm to receive before closing
             ser.close()
-            print(f"Received {int(len(samples)/1.5)} samples.")
+            print(f"Received {int(len(samples)/1.5)} samples.") # we receive 1.5 bytes per sample
             break
 
         # end the sending of samples and disconnect
-        ser.write('O'.encode())
-        ser.write('O'.encode())
-        ser.write('O'.encode())
-        ser.write('O'.encode())
+        ser.write(b'OO')
+        time.sleep(0.01) # wait a bit for stm to receive before closing
         ser.close()
 
-        print(f"Received {int(len(samples)/1.5)} samples.")
+        print(f"Received {int(len(samples)/1.5)} samples.") # we receive 1.5 bytes per sample
     
         # call outmodes() to select the output mode
         outmodes(samples)
@@ -129,43 +126,32 @@ def record_distance_trigger(distance):
 # Output function
 # =========================
 def outmodes(raw_data):
-    # user selection for mode
-    mode = " "
-    while(mode not in {"wav","png", "csv"}):
-        mode = input("Enter the mode you want the data in (wav, png, csv): ")
 
-    # 1. Unpack 3-byte chunks back into two 12-bit samples
+    # unpack 3-byte chunks back into two 12-bit samples
     unpacked_data = []
     for i in range(0, len(raw_data) - 2, 3):
         b0 = raw_data[i]
         b1 = raw_data[i+1]
         b2 = raw_data[i+2]
         
-        s1 = (b0 << 4) | (b1 >> 4)
-        s2 = ((b1 & 0x0F) << 8) | b2
+        s1 = (b0 << 4) | (b1 >> 4) # 8 bits from byte 1, first 4 from byte 2
+        s2 = ((b1 & 0x0F) << 8) | b2 # last 4 from byte 2, 8 from byte 3
         
         unpacked_data.append(s1)
         unpacked_data.append(s2)
         
     data = np.array(unpacked_data, dtype=np.float32) # so it isnt rounded to integer
-    # 2. Map 12-bit ADC range (0 to 4095) to 16-bit WAV range (-32768 to 32767)
-    # data = (data - data.min()) / (data.max() - data.min())
-    data = (data / 4095.0) # divide down to 0-1
+    data = (data - data.min()) / (data.max() - data.min()) # normalisation
     data = data * 65535.0  # multiply up to 16 bit
     data = data - 32768.0 # wav 16 bit takes signed so shift by half
     data = np.clip(data, -32768, 32767) # removes any errored numbers that exceeded the bounds of 16 bit
     data = data.astype(np.int16) # convert back to int (16 bit signed)
     
-    # # convert list to numpy array
-    # data = np.array(raw_data)
-    # # normalise to 0 to 255 range:
-    # # data = (data - data.min()) / data.max()
-    # data = (data - data.min()) / (data.max() - data.min())
-    # data = data * 255 # scale to 0-255
-    # data = data.astype(np.uint8) # convert to uint8 type
+
+    print("\nEnter Y/N for output types.")
 
     # .wav audio file
-    if(mode=="wav"):
+    if((input("Do you want wav output (Y/N): ")).lower() == 'y'):
         filename="test.wav"
         with wave.open(filename, 'wb') as wf:
             wf.setnchannels(1) # mono audio (single channel)
@@ -174,7 +160,7 @@ def outmodes(raw_data):
             wf.writeframes(data.tobytes()) # write the audio data to the file
 
     # .csv file raw audio data
-    if(mode=="csv"):
+    if((input("Do you want csv output (Y/N): ")).lower() == 'y'):
         with open("audio.csv", "w", newline="") as f: # open csv text file
             writer = csv.writer(f)
             writer.writerow(["Sample Rate", SAMPLE_RATE]) # write sample rate to the file in first line
@@ -184,7 +170,7 @@ def outmodes(raw_data):
                 writer.writerow([i, sample])
 
     # png (waveform)
-    if(mode=="png"):
+    if((input("Do you want png output (Y/N): ")).lower() == 'y'):
         time = np.arange(len(data)) / SAMPLE_RATE
         # plot
         plt.figure()
@@ -219,6 +205,8 @@ def run():
             try:
                 seconds = int(input("Enter number of seconds: "))
                 print(f"User Selected: {usr_selection} with {seconds}s")
+                if seconds > 60:
+                    raise ValueError # limit time to 60 since 16 bit timers on stm only handle up to 65,500 milliseconds
                 break
             except ValueError:
                 print("Enter a number")
@@ -228,8 +216,8 @@ def run():
             try:
                 distance = int(input("Enter Distance: "))
                 print(f"User Selected: {usr_selection} with {distance}cm")
-                if distance<5:
-                    raise ValueError()
+                if distance<5 or distance>40:
+                    raise ValueError() # if distance is less than 5 ultrasonic can be unreliable 
                 break
             except ValueError:
                 print("Enter a number")
