@@ -205,11 +205,11 @@ def run():
             try:
                 seconds = int(input("Enter number of seconds: "))
                 print(f"User Selected: {usr_selection} with {seconds}s")
-                if seconds > 60:
+                if seconds > 60 or seconds<1:
                     raise ValueError # limit time to 60 since 16 bit timers on stm only handle up to 65,500 milliseconds
                 break
             except ValueError:
-                print("Enter a number")
+                print("Enter a number with 1 and 60")
         
     elif usr_selection=="D":
         while True:
@@ -220,7 +220,7 @@ def run():
                     raise ValueError() # if distance is less than 5 ultrasonic can be unreliable 
                 break
             except ValueError:
-                print("Enter a number")
+                print("Enter a number within 5 and 40")
 
     input("Press Enter to Run")
 
